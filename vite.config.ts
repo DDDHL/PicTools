@@ -4,10 +4,31 @@ import electron from 'vite-plugin-electron/simple'
 import vue from '@vitejs/plugin-vue'
 import ViteCompression from 'vite-plugin-compression'
 import ViteImagemin from 'vite-plugin-imagemin'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig({
   plugins: [
     vue(),
+    AutoImport({
+      imports: [
+        'vue',
+        'pinia',
+        'vue-router',
+        {
+          'naive-ui': [
+            'useDialog',
+            'useMessage',
+            'useNotification',
+            'useLoadingBar',
+          ],
+        },
+      ],
+    }),
+    Components({
+      resolvers: [NaiveUiResolver()],
+    }),
     electron({
       main: {
         entry: 'electron/main.ts',
