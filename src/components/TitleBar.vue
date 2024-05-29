@@ -1,49 +1,75 @@
 <script setup lang="ts">
+import { useThemeStore } from '@/store'
 import {
-  Subtract24Regular,
-  Maximize24Regular,
-  Dismiss24Regular,
-  ArrowExpand24Regular,
-} from '@vicons/fluent'
+  WindowMaximizeRegular,
+  WindowRestoreRegular,
+  WindowMaximize,
+  WindowRestore,
+  WindowCloseRegular,
+  WindowClose,
+} from '@vicons/fa'
+import { Subtract12Filled } from '@vicons/fluent'
+const themeStore = useThemeStore()
 const isMaximized = ref(false)
 
+window.ipcRenderer.on('maximize', () => {
+  isMaximized.value = true
+})
+
+window.ipcRenderer.on('restore', () => {
+  isMaximized.value = false
+})
+
 function minimizeWindow() {
-  console.log('Minimize window')
+  window.ipcRenderer.send('minimize')
 }
 
 function toggleMaximizeWindow() {
   isMaximized.value = !isMaximized.value
   if (isMaximized.value) {
-    console.log('Maximize window')
+    window.ipcRenderer.send('maximize')
   } else {
-    console.log('Restore window')
+    window.ipcRenderer.send('restore')
   }
 }
 
 function closeWindow() {
-  console.log('Close window')
+  window.ipcRenderer.send('close')
 }
 </script>
 
 <template>
-  <div class="titleBar">
+  <div class="titleBar" :style="{ borderBottom: '.5px solid' }">
+    <section class="left">
+      <img src="/public/logo.ico" alt="icon" />
+      <p>PicTools</p>
+    </section>
     <section class="control">
-      <div class="item">
+      <div class="item" @click="minimizeWindow">
         <n-icon size="20">
-          <Subtract24Regular @click="minimizeWindow" />
+          <Subtract12Filled />
         </n-icon>
       </div>
-      <div class="item">
-        <n-icon size="20">
+      <div class="item" @click="toggleMaximizeWindow">
+        <n-icon size="15">
           <component
-            :is="isMaximized ? ArrowExpand24Regular : Maximize24Regular"
-            @click="toggleMaximizeWindow"
+            :is="
+              themeStore.theme === null
+                ? isMaximized
+                  ? WindowRestoreRegular
+                  : WindowMaximizeRegular
+                : isMaximized
+                  ? WindowRestore
+                  : WindowMaximize
+            "
           />
         </n-icon>
       </div>
-      <div class="item">
-        <n-icon size="20">
-          <Dismiss24Regular @click="closeWindow" />
+      <div class="item" @click="closeWindow">
+        <n-icon size="15">
+          <component
+            :is="themeStore.theme === null ? WindowCloseRegular : WindowClose"
+          />
         </n-icon>
       </div>
     </section>
@@ -54,12 +80,21 @@ function closeWindow() {
 .titleBar {
   width: 100vw;
   height: 35px;
-  background-color: #e8e8e8;
   display: flex;
   user-select: none;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   -webkit-app-region: drag;
+  box-sizing: border-box;
+  .left {
+    display: flex;
+    align-items: center;
+    img {
+      width: 25px;
+      height: 25px;
+      margin: 0 5px;
+    }
+  }
   .control {
     height: 30px;
     display: flex;

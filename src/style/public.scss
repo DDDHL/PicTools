@@ -2,3 +2,10 @@
 
 $bg-color-light:#fff;
 $bg-color-dark:#333;
+
+@mixin clickActiveScale($scaleNum,$scaleTime:0.3s){
+  transition: transform $scaleTime;
+  &:active{
+    transform: scale($scaleNum);
+  }
+}

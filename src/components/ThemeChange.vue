@@ -32,7 +32,7 @@ import { darkTheme, commonDark } from 'naive-ui'
 import { useThemeStore } from '@/store'
 const themeStore = useThemeStore()
 const generateColors = ref<string[]>([])
-const primaryColor = ref('#3580ED') // 定义一个主色
+const primaryColor = ref('#001E36') // 定义一个主色
 
 setThemeOverrides()
 

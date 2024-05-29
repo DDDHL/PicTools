@@ -1,6 +1,7 @@
 import { app, BrowserWindow, Menu, globalShortcut } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import ipcMessage from './modules/ipcMessage'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 process.env.APP_ROOT = path.join(__dirname, '..')
 export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
@@ -31,6 +32,8 @@ function createWindow() {
   } else {
     win.loadFile(path.join(RENDERER_DIST, 'index.html'))
   }
+
+  ipcMessage(win)
 }
 
 app.on('window-all-closed', () => {
