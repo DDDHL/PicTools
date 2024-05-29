@@ -9,6 +9,8 @@ import {
   WindowClose,
 } from '@vicons/fa'
 import { Subtract12Filled } from '@vicons/fluent'
+import { useThemeVars } from 'naive-ui'
+const themeVars = useThemeVars()
 const themeStore = useThemeStore()
 const isMaximized = ref(false)
 
@@ -39,9 +41,15 @@ function closeWindow() {
 </script>
 
 <template>
-  <div class="titleBar" :style="{ borderBottom: '.5px solid' }">
+  <div
+    class="titleBar"
+    :style="{
+      borderBottom: `1px solid ${themeVars.borderColor}`,
+      background: themeVars.cardColor,
+    }"
+  >
     <section class="left">
-      <img src="/public/logo.ico" alt="icon" />
+      <img src="/logo.ico" alt="icon" />
       <p>PicTools</p>
     </section>
     <section class="control">

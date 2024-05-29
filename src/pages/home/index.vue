@@ -8,7 +8,9 @@
     <section class="center">
       <Center />
     </section>
-    <section class="right"></section>
+    <section class="right">
+      <ThemeChange />
+    </section>
   </div>
 </template>
 

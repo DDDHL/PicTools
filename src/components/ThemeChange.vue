@@ -33,7 +33,8 @@ import { useThemeStore } from '@/store'
 const themeStore = useThemeStore()
 const generateColors = ref<string[]>([])
 const primaryColor = ref('#001E36') // 定义一个主色
-
+import { useThemeVars } from 'naive-ui'
+const themeVars = useThemeVars()
 setThemeOverrides()
 
 function setThemeOverrides() {
@@ -52,6 +53,8 @@ function setThemeOverrides() {
     primaryColorSuppl: generateColors.value[6],
   }
   themeStore.themeOverrides.common = commonColors
+
+  console.log(themeVars)
 }
 
 watch(
