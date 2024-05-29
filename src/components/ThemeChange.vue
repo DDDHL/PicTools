@@ -1,31 +1,3 @@
-<template>
-  <n-row gutter="12">
-    <n-form inline>
-      <n-col :span="4">
-        <n-form-item label="主题色">
-          <n-color-picker
-            v-model:value="primaryColor"
-            :show-alpha="false"
-            :on-complete="setThemeOverrides"
-          />
-        </n-form-item>
-      </n-col>
-    </n-form>
-  </n-row>
-  <n-space>
-    <n-button
-      :type="themeStore.theme === null ? '' : 'primary'"
-      @click="themeStore.theme = darkTheme"
-      >深色</n-button
-    >
-    <n-button
-      :type="themeStore.theme === null ? 'primary' : ''"
-      @click="themeStore.theme = null"
-      >浅色</n-button
-    >
-  </n-space>
-</template>
-
 <script lang="ts" setup>
 import { generate } from '@ant-design/colors'
 import { darkTheme, commonDark } from 'naive-ui'
@@ -64,3 +36,32 @@ watch(
   }
 )
 </script>
+
+<template>
+  <div class="themeChange">
+    <n-form-item label="主题色">
+      <n-color-picker
+        v-model:value="primaryColor"
+        :show-alpha="false"
+        :on-complete="setThemeOverrides"
+      />
+    </n-form-item>
+    <n-button
+      :type="themeStore.theme === null ? '' : 'primary'"
+      @click="themeStore.theme = darkTheme"
+      >深色</n-button
+    >
+    <n-button
+      :type="themeStore.theme === null ? 'primary' : ''"
+      @click="themeStore.theme = null"
+      >浅色</n-button
+    >
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.themeChange {
+  width: 100%;
+  border: 1px solid red;
+}
+</style>

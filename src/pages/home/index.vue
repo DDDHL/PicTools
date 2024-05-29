@@ -31,7 +31,9 @@
   }
   .right {
     position: absolute;
-    height: 100%;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
 </style>
