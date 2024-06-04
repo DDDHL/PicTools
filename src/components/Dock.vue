@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="dock"></div>
+  <div class="dock">1</div>
 </template>
 
 <style scoped lang="scss">

@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import { useThemeStore } from '@/store'
 import {
   WindowMaximizeRegular,
   WindowRestoreRegular,
-  WindowMaximize,
-  WindowRestore,
   WindowCloseRegular,
-  WindowClose,
 } from '@vicons/fa'
 import { Subtract12Filled } from '@vicons/fluent'
-import { useThemeVars } from 'naive-ui'
-const themeVars = useThemeVars()
-const themeStore = useThemeStore()
 const isMaximized = ref(false)
 
 window.ipcRenderer.on('maximize', () => {
@@ -41,13 +34,7 @@ function closeWindow() {
 </script>
 
 <template>
-  <div
-    class="titleBar"
-    :style="{
-      borderBottom: `1px solid ${themeVars.borderColor}`,
-      background: themeVars.cardColor,
-    }"
-  >
+  <div class="titleBar">
     <section class="left">
       <img src="/logo.ico" alt="icon" />
       <p>PicTools</p>
@@ -61,23 +48,13 @@ function closeWindow() {
       <div class="item" @click="toggleMaximizeWindow">
         <n-icon size="15">
           <component
-            :is="
-              themeStore.theme === null
-                ? isMaximized
-                  ? WindowRestoreRegular
-                  : WindowMaximizeRegular
-                : isMaximized
-                  ? WindowRestore
-                  : WindowMaximize
-            "
+            :is="isMaximized ? WindowRestoreRegular : WindowMaximizeRegular"
           />
         </n-icon>
       </div>
       <div class="item" @click="closeWindow">
         <n-icon size="15">
-          <component
-            :is="themeStore.theme === null ? WindowCloseRegular : WindowClose"
-          />
+          <component :is="WindowCloseRegular" />
         </n-icon>
       </div>
     </section>
@@ -94,6 +71,9 @@ function closeWindow() {
   justify-content: space-between;
   -webkit-app-region: drag;
   box-sizing: border-box;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #efeff5;
   .left {
     display: flex;
     align-items: center;
@@ -114,10 +94,10 @@ function closeWindow() {
       justify-content: center;
       align-items: center;
       &:hover {
-        background-color: #dedede;
+        background-color: #e3e3e3;
       }
       &:active {
-        background-color: #dbdbdb;
+        background-color: #cacaca;
       }
     }
   }
