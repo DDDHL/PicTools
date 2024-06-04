@@ -10,7 +10,6 @@ import {
   ImageArrowCounterclockwise24Regular,
   ImageAltText24Regular,
 } from '@vicons/fluent'
-
 const collapsed = ref(true)
 
 function renderIcon(icon: Component) {
@@ -92,6 +91,7 @@ const menuOptions: MenuOption[] = [
         @expand="collapsed = false"
       >
         <n-menu
+          default-value="edit"
           :collapsed="collapsed"
           :collapsed-width="64"
           :collapsed-icon-size="22"

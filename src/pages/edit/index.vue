@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="edit">edit</div>
+  <div class="edit"></div>
 </template>
 
 <style scoped lang="scss">
