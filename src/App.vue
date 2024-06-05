@@ -1,110 +1,113 @@
 <script setup lang="ts">
+import { NConfigProvider } from 'naive-ui'
+import { zhCN, dateZhCN } from 'naive-ui'
 import TitleBar from '@/components/TitleBar.vue'
+import { usePublicStore } from '@/store'
 import { h, ref } from 'vue'
 import { NIcon } from 'naive-ui'
 import type { MenuOption } from 'naive-ui'
-import { RouterLink } from 'vue-router'
 import {
   DrawImage24Regular,
   ResizeImage24Regular,
   ImageArrowCounterclockwise24Regular,
   ImageAltText24Regular,
+  Home24Regular,
 } from '@vicons/fluent'
+import router from './router'
 const collapsed = ref(true)
-
+const publicStore = usePublicStore()
 function renderIcon(icon: Component) {
   return () => h(NIcon, null, { default: () => h(icon) })
 }
-
-const menuOptions: MenuOption[] = [
+watch(
+  () => publicStore.uploadedImages,
+  (newVal) => {
+    if (newVal.length) {
+      menuOptions.value.forEach((item) => {
+        if (item.key !== 'selectImg') item.disabled = false
+      })
+    } else {
+      menuOptions.value.forEach((item) => {
+        if (item.key !== 'selectImg') item.disabled = true
+      })
+      router.push('/selectImg')
+    }
+  },
   {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: {
-            name: 'waterframe',
-          },
-        },
-        { default: () => '图片水印' }
-      ),
+    deep: true,
+  }
+)
+
+const changeMenu = (e: string) => {
+  router.push(e)
+}
+
+const menuOptions = ref<MenuOption[]>([
+  {
+    label: '首页设置',
+    disabled: false,
+    key: 'selectImg',
+    icon: renderIcon(Home24Regular),
+  },
+  {
+    label: '图片水印',
+    disabled: true,
     key: 'waterframe',
     icon: renderIcon(ResizeImage24Regular),
   },
   {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: {
-            name: 'edit',
-          },
-        },
-        { default: () => '图片修改' }
-      ),
+    label: '图片修改',
+    disabled: true,
     key: 'edit',
     icon: renderIcon(DrawImage24Regular),
   },
   {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: {
-            name: 'compress',
-          },
-        },
-        { default: () => '图片压缩' }
-      ),
+    label: '图片压缩',
+    disabled: true,
     key: 'compress',
     icon: renderIcon(ImageAltText24Regular),
   },
   {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: {
-            name: 'exchange',
-          },
-        },
-        { default: () => '格式转换' }
-      ),
+    label: '格式转换',
+    disabled: true,
     key: 'exchange',
     icon: renderIcon(ImageArrowCounterclockwise24Regular),
   },
-]
+])
 </script>
 
 <template>
   <TitleBar />
-  <n-space vertical>
-    <n-layout has-sider>
-      <n-layout-sider
-        bordered
-        collapse-mode="width"
-        :collapsed-width="64"
-        :width="240"
-        :collapsed="collapsed"
-        show-trigger
-        @collapse="collapsed = true"
-        @expand="collapsed = false"
-      >
-        <n-menu
-          default-value="edit"
-          :collapsed="collapsed"
+  <n-config-provider :locale="zhCN" :date-locale="dateZhCN">
+    <n-space vertical>
+      <n-layout has-sider>
+        <n-layout-sider
+          bordered
+          collapse-mode="width"
           :collapsed-width="64"
-          :collapsed-icon-size="22"
-          :options="menuOptions"
-        />
-      </n-layout-sider>
-      <n-layout>
-        <router-view v-slot="{ Component }">
-          <component :is="Component" />
-        </router-view>
+          :width="155"
+          :collapsed="collapsed"
+          show-trigger
+          @collapse="collapsed = true"
+          @expand="collapsed = false"
+        >
+          <n-menu
+            default-value="selectImg"
+            :collapsed="collapsed"
+            :collapsed-width="64"
+            :collapsed-icon-size="22"
+            :options="menuOptions"
+            @update-value="changeMenu"
+          />
+        </n-layout-sider>
+        <n-layout>
+          <router-view v-slot="{ Component }">
+            <component :is="Component" />
+          </router-view>
+        </n-layout>
       </n-layout>
-    </n-layout>
-  </n-space>
+    </n-space>
+  </n-config-provider>
 </template>
 
 <style scoped lang="scss">

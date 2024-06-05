@@ -3,7 +3,12 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/edit',
+    redirect: '/selectImg',
+  },
+  {
+    path: '/selectImg',
+    name: 'selectImg',
+    component: () => import('@/pages/selectImg/index.vue'),
   },
   {
     path: '/waterframe',

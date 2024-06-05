@@ -1,5 +1,5 @@
 export type publicStoreType = {
-  currentPicList: {}[]
+  uploadedImages: File[]
 }
 export type configStoreType = {
   exportPath: string
