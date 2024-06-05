@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { ImageAdd24Regular } from '@vicons/fluent'
-import { usePublicStore } from '@/store'
+import { usePublicStore, useConfigStore } from '@/store'
+import { useMessage } from 'naive-ui'
+import { setLocalStore } from '@/hooks/useLocalConfig'
+const message = useMessage()
 const publicStore = usePublicStore()
+const configStore = useConfigStore()
 let timer = 0
 
 const loading = ref(false)
@@ -24,6 +28,18 @@ const handleUpload = (data: { file: { file: File } }) => {
 
 const handlePositiveClick = () => {
   publicStore.uploadedImages = []
+}
+
+async function selectDirectory() {
+  try {
+    const path = await window.ipcRenderer.invoke('get-path')
+    if (path) {
+      configStore.exportPath = path
+      setLocalStore()
+    } else {
+      message.error('设置路径失败')
+    }
+  } catch (error) {}
 }
 
 onUnmounted(() => {
@@ -94,8 +110,15 @@ onUnmounted(() => {
             </n-image-group>
           </div>
         </n-tab-pane>
-        <n-tab-pane name="chap2" tab="导出图片设置">
-          <div class="selectFolder"></div>
+        <n-tab-pane name="chap2" tab="导出设置">
+          <div class="selectFolder">
+            <div class="item">
+              <p>导出路径</p>
+              <n-button text @click="selectDirectory">
+                {{ configStore.exportPath }}
+              </n-button>
+            </div>
+          </div>
         </n-tab-pane>
       </n-tabs>
     </section>
@@ -121,6 +144,11 @@ onUnmounted(() => {
   }
   .selectFolder {
     width: 70vw;
+    .item {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+    }
   }
   .picList {
     display: flex;

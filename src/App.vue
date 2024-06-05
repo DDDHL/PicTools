@@ -6,6 +6,7 @@ import { usePublicStore } from '@/store'
 import { h, ref } from 'vue'
 import { NIcon } from 'naive-ui'
 import type { MenuOption } from 'naive-ui'
+import { useLocalConfig } from '@/hooks/useLocalConfig'
 import {
   DrawImage24Regular,
   ResizeImage24Regular,
@@ -16,9 +17,13 @@ import {
 import router from './router'
 const collapsed = ref(true)
 const publicStore = usePublicStore()
+
+useLocalConfig()
+
 function renderIcon(icon: Component) {
   return () => h(NIcon, null, { default: () => h(icon) })
 }
+
 watch(
   () => publicStore.uploadedImages,
   (newVal) => {
@@ -79,34 +84,36 @@ const menuOptions = ref<MenuOption[]>([
 <template>
   <TitleBar />
   <n-config-provider :locale="zhCN" :date-locale="dateZhCN">
-    <n-space vertical>
-      <n-layout has-sider>
-        <n-layout-sider
-          bordered
-          collapse-mode="width"
-          :collapsed-width="64"
-          :width="155"
-          :collapsed="collapsed"
-          show-trigger
-          @collapse="collapsed = true"
-          @expand="collapsed = false"
-        >
-          <n-menu
-            default-value="selectImg"
-            :collapsed="collapsed"
+    <n-message-provider>
+      <n-space vertical>
+        <n-layout has-sider>
+          <n-layout-sider
+            bordered
+            collapse-mode="width"
             :collapsed-width="64"
-            :collapsed-icon-size="22"
-            :options="menuOptions"
-            @update-value="changeMenu"
-          />
-        </n-layout-sider>
-        <n-layout>
-          <router-view v-slot="{ Component }">
-            <component :is="Component" />
-          </router-view>
+            :width="155"
+            :collapsed="collapsed"
+            show-trigger
+            @collapse="collapsed = true"
+            @expand="collapsed = false"
+          >
+            <n-menu
+              default-value="selectImg"
+              :collapsed="collapsed"
+              :collapsed-width="64"
+              :collapsed-icon-size="22"
+              :options="menuOptions"
+              @update-value="changeMenu"
+            />
+          </n-layout-sider>
+          <n-layout>
+            <router-view v-slot="{ Component }">
+              <component :is="Component" />
+            </router-view>
+          </n-layout>
         </n-layout>
-      </n-layout>
-    </n-space>
+      </n-space>
+    </n-message-provider>
   </n-config-provider>
 </template>
 

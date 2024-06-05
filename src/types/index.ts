@@ -3,5 +3,4 @@ export type publicStoreType = {
 }
 export type configStoreType = {
   exportPath: string
-  readPath: string
 }

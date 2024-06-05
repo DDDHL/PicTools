@@ -2,8 +2,7 @@ import { configStoreType } from '@/types'
 
 export const useConfigStore = defineStore('ConfigStore', {
   state: (): configStoreType => ({
-    exportPath: '',
-    readPath: '',
+    exportPath: 'C:\\export',
   }),
   getters: {},
   actions: {},
