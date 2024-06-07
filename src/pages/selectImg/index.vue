@@ -15,10 +15,14 @@ const handleUpload = (data: { file: { file: File } }) => {
   }
   if (
     !publicStore.uploadedImages.some(
-      (item) => item.path === data.file.file.path
+      (item) => item.file.path === data.file.file.path
     )
   ) {
-    publicStore.uploadedImages.push(data.file.file)
+    publicStore.uploadedImages.push({
+      selected: false,
+      scale: 1,
+      file: data.file.file,
+    })
   }
   clearTimeout(timer)
   timer = window.setTimeout(() => {
@@ -100,14 +104,14 @@ onUnmounted(() => {
           >
             <n-back-top right="2%" />
             <n-image-group show-toolbar-tooltip>
-              <n-space justify="center">
-                <n-image
-                  v-for="item in publicStore.uploadedImages"
-                  width="90"
-                  :src="item.path"
-                  class="imgItem"
-                />
-              </n-space>
+              <n-image
+                lazy
+                height="77px"
+                width="107.5px"
+                v-for="item in publicStore.uploadedImages"
+                :src="item.file.path"
+                class="imgItem"
+              />
             </n-image-group>
           </div>
         </n-tab-pane>
@@ -162,10 +166,14 @@ onUnmounted(() => {
     border: 1px dashed rgb(224, 224, 230);
     border-radius: 4px;
     margin-bottom: 60px;
+
     .imgItem {
       border: 1px solid #dedede;
       border-radius: 4px;
-      margin-top: 5px;
+      margin: 5px 0 0 5px;
+      img {
+        object-fit: cover;
+      }
     }
   }
 }

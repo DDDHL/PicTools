@@ -2,6 +2,7 @@
 import { NConfigProvider } from 'naive-ui'
 import { zhCN, dateZhCN } from 'naive-ui'
 import TitleBar from '@/components/TitleBar.vue'
+import Dock from '@/components/Dock.vue'
 import { usePublicStore } from '@/store'
 import { h, ref } from 'vue'
 import { NIcon } from 'naive-ui'
@@ -15,7 +16,6 @@ import {
   Home24Regular,
 } from '@vicons/fluent'
 import router from './router'
-const collapsed = ref(true)
 const publicStore = usePublicStore()
 
 useLocalConfig()
@@ -92,14 +92,14 @@ const menuOptions = ref<MenuOption[]>([
             collapse-mode="width"
             :collapsed-width="64"
             :width="155"
-            :collapsed="collapsed"
+            :collapsed="publicStore.collapsed"
             show-trigger
-            @collapse="collapsed = true"
-            @expand="collapsed = false"
+            @collapse="publicStore.collapsed = true"
+            @expand="publicStore.collapsed = false"
           >
             <n-menu
               default-value="selectImg"
-              :collapsed="collapsed"
+              :collapsed="publicStore.collapsed"
               :collapsed-width="64"
               :collapsed-icon-size="22"
               :options="menuOptions"
@@ -107,6 +107,7 @@ const menuOptions = ref<MenuOption[]>([
             />
           </n-layout-sider>
           <n-layout>
+            <Dock />
             <router-view v-slot="{ Component }">
               <component :is="Component" />
             </router-view>
