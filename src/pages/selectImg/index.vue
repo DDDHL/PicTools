@@ -98,6 +98,7 @@ onUnmounted(() => {
             class="showList"
             v-show="!loading && publicStore.uploadedImages.length"
           >
+            <n-back-top right="2%" />
             <n-image-group show-toolbar-tooltip>
               <n-space justify="center">
                 <n-image
@@ -160,7 +161,7 @@ onUnmounted(() => {
     margin-top: 15px;
     border: 1px dashed rgb(224, 224, 230);
     border-radius: 4px;
-
+    margin-bottom: 60px;
     .imgItem {
       border: 1px solid #dedede;
       border-radius: 4px;
