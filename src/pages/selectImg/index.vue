@@ -103,11 +103,11 @@ onUnmounted(() => {
             v-show="!loading && publicStore.uploadedImages.length"
           >
             <n-back-top right="2%" />
-            <n-image-group show-toolbar-tooltip>
+            <n-image-group>
               <n-image
                 lazy
                 height="77px"
-                width="107.5px"
+                width="105px"
                 v-for="item in publicStore.uploadedImages"
                 :src="item.file.path"
                 class="imgItem"
@@ -166,14 +166,29 @@ onUnmounted(() => {
     border: 1px dashed rgb(224, 224, 230);
     border-radius: 4px;
     margin-bottom: 60px;
+    display: grid;
+    justify-content: space-between;
+    grid-template-columns: repeat(auto-fill, 105px);
+    gap: 5px;
+    padding: 5px;
 
     .imgItem {
       border: 1px solid #dedede;
       border-radius: 4px;
-      margin: 5px 0 0 5px;
       img {
         object-fit: cover;
       }
+    }
+  }
+}
+</style>
+<style>
+.n-image-preview-toolbar {
+  .n-base-icon:nth-last-child(2) {
+    display: none;
+    pointer-events: none;
+    svg {
+      pointer-events: none;
     }
   }
 }
