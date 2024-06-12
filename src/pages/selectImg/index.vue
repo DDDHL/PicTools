@@ -1,42 +1,39 @@
 <script setup lang="ts">
-import { ImageAdd24Regular } from '@vicons/fluent'
+import { ShareCloseTray24Regular, DismissCircle24Regular } from '@vicons/fluent'
 import { usePublicStore, useConfigStore } from '@/store'
 import { useMessage } from 'naive-ui'
 import { setLocalStore } from '@/hooks/useLocalConfig'
 const message = useMessage()
 const publicStore = usePublicStore()
 const configStore = useConfigStore()
-let timer = 0
-
 const loading = ref(false)
-const handleUpload = (data: { file: { file: File } }) => {
-  if (!publicStore.uploadedImages.length) {
-    loading.value = true
-  }
-  if (
-    !publicStore.uploadedImages.some(
-      (item) => item.file.path === data.file.file.path
-    )
-  ) {
-    publicStore.uploadedImages.push({
-      selected: false,
-      scale: 1,
-      file: data.file.file,
-    })
-  }
-  clearTimeout(timer)
-  timer = window.setTimeout(() => {
-    loading.value = false
-  }, 1000)
-}
 
 const handlePositiveClick = () => {
   publicStore.uploadedImages = []
 }
 
-async function selectDirectory() {
+const selectPic = async () => {
   try {
-    const path = await window.ipcRenderer.invoke('get-path')
+    loading.value = true
+    const path = await window.ipcRenderer.invoke('get-pic-path')
+    if (path) {
+      publicStore.uploadedImages = path.map((item: any) => {
+        return {
+          path: item,
+          selected: false,
+          scale: 1,
+        }
+      })
+    } else {
+      message.error('选中出错')
+    }
+  } catch (error) {}
+  loading.value = false
+}
+
+const selectDirectory = async () => {
+  try {
+    const path = await window.ipcRenderer.invoke('get-directory-path')
     if (path) {
       configStore.exportPath = path
       setLocalStore()
@@ -46,9 +43,9 @@ async function selectDirectory() {
   } catch (error) {}
 }
 
-onUnmounted(() => {
-  clearTimeout(timer)
-})
+const deleteImg = (index: number) => {
+  publicStore.uploadedImages.splice(index, 1)
+}
 </script>
 
 <template>
@@ -58,28 +55,12 @@ onUnmounted(() => {
       <n-tabs type="segment" animated>
         <n-tab-pane name="chap1" tab="导入图片">
           <n-spin :show="loading">
-            <div class="selectPic">
-              <n-upload
-                multiple
-                directory-dnd
-                :default-upload="false"
-                :show-file-list="false"
-                @before-upload="handleUpload($event)"
-              >
-                <n-upload-dragger>
-                  <div style="margin-bottom: 12px">
-                    <n-icon size="48" :depth="3">
-                      <ImageAdd24Regular />
-                    </n-icon>
-                  </div>
-                  <n-text style="font-size: 16px">
-                    点击或者拖动文件/文件夹到该区域导入图片
-                  </n-text>
-                  <n-p depth="3" style="margin: 8px 0 0 0">
-                    支持格式：PNG/JPG/JPEG/RAW
-                  </n-p>
-                </n-upload-dragger>
-              </n-upload>
+            <div class="selectPic" @click="selectPic">
+              <n-icon size="90" color="#9B9B9C">
+                <ShareCloseTray24Regular />
+              </n-icon>
+              <p>点击或者拖动图片到该区域来导入</p>
+              <p>仅支持PNG/JPEG/JPG</p>
             </div>
           </n-spin>
           <div
@@ -104,14 +85,23 @@ onUnmounted(() => {
           >
             <n-back-top right="2%" />
             <n-image-group>
-              <n-image
-                lazy
-                height="77px"
-                width="105px"
-                v-for="item in publicStore.uploadedImages"
-                :src="item.file.path"
-                class="imgItem"
-              />
+              <div
+                class="iconWrap"
+                v-for="(item, index) in publicStore.uploadedImages"
+              >
+                <n-image
+                  lazy
+                  height="77px"
+                  width="105px"
+                  :src="item.path"
+                  class="imgItem"
+                />
+                <n-icon
+                  class="closeIcon"
+                  :component="DismissCircle24Regular"
+                  @click="deleteImg(index)"
+                />
+              </div>
             </n-image-group>
           </div>
         </n-tab-pane>
@@ -146,6 +136,22 @@ onUnmounted(() => {
   }
   .selectPic {
     width: 70vw;
+    border: 1px dashed #e0e0e6;
+    background-color: #fafafc;
+    border-radius: 3px;
+    height: 40vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    cursor: pointer;
+    p {
+      font-size: 20px;
+    }
+    p:last-child {
+      font-size: 16px;
+      color: rgb(118, 124, 130);
+    }
   }
   .selectFolder {
     width: 70vw;
@@ -171,12 +177,29 @@ onUnmounted(() => {
     grid-template-columns: repeat(auto-fill, 105px);
     gap: 5px;
     padding: 5px;
+    .iconWrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      .closeIcon {
+        position: absolute;
+        color: #fff;
+        transition: color 0.3s;
+        z-index: 9;
+        top: 4%;
+        right: 2%;
+        cursor: pointer;
+        &:hover {
+          color: red;
+        }
+      }
+      .imgItem {
+        border: 1px solid #dedede;
+        border-radius: 4px;
 
-    .imgItem {
-      border: 1px solid #dedede;
-      border-radius: 4px;
-      img {
-        object-fit: cover;
+        img {
+          object-fit: cover;
+        }
       }
     }
   }

@@ -16,7 +16,7 @@ export default function ipcMessage(win: BrowserWindow) {
     exec(`taskkill /f /pid ${process.pid}`, () => {})
   })
 
-  ipcMain.handle('get-path', () => {
+  ipcMain.handle('get-directory-path', () => {
     return new Promise<string>((resolve) => {
       dialog
         .showOpenDialog({
@@ -32,6 +32,20 @@ export default function ipcMessage(win: BrowserWindow) {
           console.log(err)
           resolve('')
         })
+    })
+  })
+
+  ipcMain.handle('get-pic-path', () => {
+    return new Promise<string[]>(async (resolve) => {
+      const result = await dialog.showOpenDialog({
+        properties: ['openFile', 'multiSelections'],
+        filters: [{ name: 'Images', extensions: ['jpg', 'png', 'jpeg'] }],
+      })
+      if (!result.canceled) {
+        resolve(result.filePaths)
+      } else {
+        resolve([])
+      }
     })
   })
 

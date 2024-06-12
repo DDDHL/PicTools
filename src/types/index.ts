@@ -1,5 +1,5 @@
 export type publicStoreType = {
-  uploadedImages: { file: File; scale: number; selected: boolean }[]
+  uploadedImages: { path: string; selected: boolean; scale: number }[]
   collapsed: boolean
 }
 export type configStoreType = {

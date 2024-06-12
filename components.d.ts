@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     Dock: typeof import('./src/components/Dock.vue')['default']
     NBackTop: typeof import('naive-ui')['NBackTop']
+    NBadge: typeof import('naive-ui')['NBadge']
     NButton: typeof import('naive-ui')['NButton']
     NH1: typeof import('naive-ui')['NH1']
     NIcon: typeof import('naive-ui')['NIcon']
