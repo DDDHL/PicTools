@@ -1,5 +1,5 @@
 // 删除本地文字库
-export default async function (context) {
+module.exports = async function (context) {
   const fs = await import('fs/promises')
   const localeDir = context.appOutDir + '/locales/'
 

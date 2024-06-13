@@ -210,7 +210,7 @@ const deleteImg = (index: number) => {
   .n-base-icon:nth-last-child(2) {
     display: none;
     pointer-events: none;
-    svg {
+    :is(svg) {
       pointer-events: none;
     }
   }
