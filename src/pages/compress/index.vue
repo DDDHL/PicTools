@@ -9,15 +9,14 @@ onMounted(async () => {
   // }[] = await window.ipcRenderer.invoke('read-pic', [
   //   'D:\\testPic\\DSC_0033.JPG',
   // ])
-  // let data = await window.ipcRenderer.invoke(
-  //   'compress-img',
-  //   publicStore.uploadedImages.map((item) => {
-  //     return item.path
-  //   }),
-  //   configStore.exportPath,
-  //   60
-  // )
-  // console.log(data)
+  let data = await window.ipcRenderer.invoke('compress-img', {
+    imagePaths: publicStore.uploadedImages.map((item) => {
+      return item.path
+    }),
+    outputDir: configStore.exportPath,
+    quality: 60,
+  })
+  console.log(data)
 })
 </script>
 

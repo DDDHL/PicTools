@@ -8,14 +8,15 @@
     "preview": "vite preview",
     "postinstall": "electron-builder install-app-deps"
   },
-  "dependencies": {},
+  "dependencies": {
+    "jimp": "^0.22.12"
+  },
   "devDependencies": {
     "@vicons/fa": "^0.12.0",
     "@vicons/fluent": "^0.12.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "electron": "^30.0.1",
     "electron-builder": "^24.13.3",
-    "jimp": "^0.22.12",
     "naive-ui": "^2.38.2",
     "pinia": "^2.1.7",
     "prettier": "^3.2.5",
