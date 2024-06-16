@@ -38,44 +38,45 @@ export default function ipcMessage(win: BrowserWindow, publicPath: string) {
     })
   })
 
-  ipcMain.handle('get-pic-path', () => {
-    return new Promise<string[]>(async (resolve) => {
+  ipcMain.handle('get-pic', () => {
+    return new Promise(async (resolve) => {
       const result = await dialog.showOpenDialog({
         properties: ['openFile', 'multiSelections'],
         filters: [{ name: 'Images', extensions: ['jpg', 'png', 'jpeg'] }],
       })
       if (!result.canceled) {
-        resolve(result.filePaths)
+        const fileInfos = result.filePaths.map((filePath) => {
+          const stats = fs.statSync(filePath)
+          return {
+            name: path.basename(filePath),
+            path: filePath,
+            size: stats.size,
+          }
+        })
+        resolve(fileInfos)
       } else {
         resolve([])
       }
     })
   })
 
-  ipcMain.handle('read-pic', async (_event, imagePaths: string[]) => {
-    try {
-      const results = await Promise.all(
-        imagePaths.map(async (imagePath) => {
-          const data = await fs.promises.readFile(imagePath)
-          const fileType = path.extname(imagePath).slice(1)
-          return {
-            buffer: data.buffer,
-            fileType: `image/${fileType.toLowerCase()}`,
-          }
-        })
-      )
-      return results
-    } catch (error) {
-      console.error('Error reading image files:', error)
-      return []
-    }
-  })
-
   ipcMain.handle(
     'compress-img',
     (
       _event,
-      arg: { imagePaths: string[]; outputDir: string; quality: number }
+      arg: {
+        imagePaths: {
+          path: string
+          selected: boolean
+          scale: number
+          name: string
+          size: number
+          compressSize?: number
+        }[]
+        outputDir: string
+        quality: number
+        resolution: number
+      }
     ) => {
       // 启动子进程
       const childProcess = fork(
@@ -83,22 +84,17 @@ export default function ipcMessage(win: BrowserWindow, publicPath: string) {
       )
       childProcess.on(
         'message',
-        (
-          message:
-            | {
-                type: 'success'
-                data: {
-                  imageName: string
-                  originalSize: number
-                  compressedSize: number
-                  status: boolean
-                }
-              }
-            | {
-                type: 'compressing'
-                data: null
-              }
-        ) => {
+        (message: {
+          type: 'success' | 'error' | 'compressing'
+          data: {
+            path: string
+            selected: boolean
+            scale: number
+            name: string
+            size: number
+            compressSize: number
+          }
+        }) => {
           console.log('接收到子进程消息：', message)
         }
       )

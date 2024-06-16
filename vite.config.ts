@@ -97,6 +97,7 @@ export default defineConfig({
       },
     },
     rollupOptions: {
+      external: ['sharp'],
       output: {
         chunkFileNames: 'static/js/[name]-[hash].js',
         entryFileNames: 'static/js/[name]-[hash].js',

@@ -8,26 +8,28 @@ const publicStore = usePublicStore()
 const configStore = useConfigStore()
 const loading = ref(false)
 
-const handlePositiveClick = () => {
-  publicStore.uploadedImages = []
-}
-
 const selectPic = async () => {
   try {
     loading.value = true
-    const path = await window.ipcRenderer.invoke('get-pic-path')
+    const path = await window.ipcRenderer.invoke('get-pic')
     if (path) {
-      publicStore.uploadedImages = path.map((item: any) => {
-        return {
-          path: item,
-          selected: false,
-          scale: 1,
-        }
-      })
+      publicStore.uploadedImages.push(
+        ...path.map((item: any) => {
+          return {
+            path: item.path,
+            selected: false,
+            scale: 1,
+            name: item.name,
+            size: item.size,
+          }
+        })
+      )
     } else {
-      message.error('选中出错')
+      message.error('读取图片出错')
     }
-  } catch (error) {}
+  } catch (error) {
+    message.error('读取图片出错')
+  }
   loading.value = false
 }
 
@@ -63,13 +65,10 @@ const deleteImg = (index: number) => {
               <p>仅支持PNG/JPEG/JPG</p>
             </div>
           </n-spin>
-          <div
-            class="picList"
-            v-show="!loading && publicStore.uploadedImages.length"
-          >
+          <div class="picList" v-show="publicStore.uploadedImages.length">
             <p>已导入图片</p>
             <n-popconfirm
-              @positive-click="handlePositiveClick"
+              @positive-click="publicStore.uploadedImages = []"
               positive-text="删除"
               negative-text="取消"
             >
@@ -79,10 +78,7 @@ const deleteImg = (index: number) => {
               确定移除导入的图片吗？
             </n-popconfirm>
           </div>
-          <div
-            class="showList"
-            v-show="!loading && publicStore.uploadedImages.length"
-          >
+          <div class="showList" v-show="publicStore.uploadedImages.length">
             <n-back-top right="2%" />
             <n-image-group>
               <div
