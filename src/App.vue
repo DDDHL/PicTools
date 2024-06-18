@@ -14,6 +14,7 @@ import {
   ImageArrowCounterclockwise24Regular,
   ImageAltText24Regular,
   Home24Regular,
+  Settings28Regular,
 } from '@vicons/fluent'
 import router from './router'
 const publicStore = usePublicStore()
@@ -29,11 +30,13 @@ watch(
   (newVal) => {
     if (newVal.length) {
       menuOptions.value.forEach((item) => {
-        if (item.key !== 'selectImg') item.disabled = false
+        if (item.key !== 'selectImg' && item.key !== 'setting')
+          item.disabled = false
       })
     } else {
       menuOptions.value.forEach((item) => {
-        if (item.key !== 'selectImg') item.disabled = true
+        if (item.key !== 'selectImg' && item.key !== 'setting')
+          item.disabled = true
       })
       router.push('/selectImg')
     }
@@ -78,6 +81,12 @@ const menuOptions = ref<MenuOption[]>([
     key: 'exchange',
     icon: renderIcon(ImageArrowCounterclockwise24Regular),
   },
+  {
+    label: '软件设置',
+    disabled: false,
+    key: 'setting',
+    icon: renderIcon(Settings28Regular),
+  },
 ])
 </script>
 
@@ -121,5 +130,10 @@ const menuOptions = ref<MenuOption[]>([
 <style scoped lang="scss">
 :deep(.n-layout-sider-scroll-container) {
   height: calc(100vh - 35px);
+  .n-menu-item:last-child {
+    position: absolute;
+    width: 100%;
+    bottom: 1vh;
+  }
 }
 </style>

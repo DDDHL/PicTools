@@ -28,7 +28,10 @@ const resetScale = () => {
       marginLeft: `${publicStore.collapsed ? 32 : 77.5}px`,
     }"
     v-show="
-      publicStore.uploadedImages.length && $route.fullPath !== '/selectImg'
+      publicStore.uploadedImages.length &&
+      $route.fullPath !== '/selectImg' &&
+      $route.fullPath !== '/compress' &&
+      $route.fullPath !== '/setting'
     "
     @mouseleave="resetScale"
   >

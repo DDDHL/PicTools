@@ -30,6 +30,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'compress',
     component: () => import('@/pages/compress/index.vue'),
   },
+  {
+    path: '/setting',
+    name: 'setting',
+    component: () => import('@/pages/setting/index.vue'),
+  },
 ]
 
 const router = createRouter({

@@ -1,4 +1,14 @@
+$boxShadow: 0 6px 15.98px 1.02px rgba(56,86,122,.1);
 
+@mixin cardStyle(){
+  box-shadow: $boxShadow;
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+@mixin bgColor(){
+  background-image: linear-gradient(to bottom, #dfe9f3 0%, white 100%);
+}
 
 @mixin clickActiveScale($scaleNum,$scaleTime:0.3s){
   transition: transform $scaleTime;

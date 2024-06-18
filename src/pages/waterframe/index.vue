@@ -7,9 +7,9 @@
 <style scoped lang="scss">
 .waterframe {
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 35px);
   position: relative;
   display: flex;
-  background-color: antiquewhite;
+  @include bgColor();
 }
 </style>

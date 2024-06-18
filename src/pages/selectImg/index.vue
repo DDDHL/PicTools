@@ -119,12 +119,11 @@ const deleteImg = (index: number) => {
 <style scoped lang="scss">
 .selectImg {
   width: 80%;
-  height: 100vh;
+  height: calc(100vh - 35px);
   display: flex;
   align-items: center;
   flex-direction: column;
   margin-left: 10%;
-
   .title {
     text-align: center;
     color: #378af1;
