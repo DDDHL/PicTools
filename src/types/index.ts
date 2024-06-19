@@ -5,6 +5,8 @@ export type publicStoreType = {
 export type configStoreType = {
   exportPath: string
   sizeUnit: 'MB' | 'KB'
+  menuExpand: boolean
+  concurrence: number
 }
 export type uploadedImagesType = {
   path: string

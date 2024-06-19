@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { NConfigProvider } from 'naive-ui'
-import { zhCN, dateZhCN } from 'naive-ui'
+import { zhCN, dateZhCN, GlobalThemeOverrides, NConfigProvider } from 'naive-ui'
 import TitleBar from '@/components/TitleBar.vue'
 import Dock from '@/components/Dock.vue'
 import { usePublicStore } from '@/store'
@@ -45,6 +44,18 @@ watch(
     deep: true,
   }
 )
+
+const themeOverrides: GlobalThemeOverrides = {
+  common: {
+    primaryColor: '#458AEE', // 蓝色
+    primaryColorHover: '#5A9EF2', // 浅蓝色，用于悬停状态
+    primaryColorPressed: '#3A7CDE', // 深蓝色，用于按压状态
+    primaryColorSuppl: '#458AEE', // 辅助主颜色
+  },
+  Button: {
+    textColor: '#458AEE', // 按钮文字颜色
+  },
+}
 
 const changeMenu = (e: string) => {
   router.push(e)
@@ -92,38 +103,44 @@ const menuOptions = ref<MenuOption[]>([
 
 <template>
   <TitleBar />
-  <n-config-provider :locale="zhCN" :date-locale="dateZhCN">
-    <n-message-provider>
-      <n-space vertical>
-        <n-layout has-sider>
-          <n-layout-sider
-            bordered
-            collapse-mode="width"
-            :collapsed-width="64"
-            :width="155"
-            :collapsed="publicStore.collapsed"
-            show-trigger
-            @collapse="publicStore.collapsed = true"
-            @expand="publicStore.collapsed = false"
-          >
-            <n-menu
-              default-value="selectImg"
-              :collapsed="publicStore.collapsed"
+  <n-config-provider
+    :locale="zhCN"
+    :date-locale="dateZhCN"
+    :theme-overrides="themeOverrides"
+  >
+    <n-dialog-provider>
+      <n-message-provider>
+        <n-space vertical>
+          <n-layout has-sider>
+            <n-layout-sider
+              bordered
+              collapse-mode="width"
               :collapsed-width="64"
-              :collapsed-icon-size="22"
-              :options="menuOptions"
-              @update-value="changeMenu"
-            />
-          </n-layout-sider>
-          <n-layout>
-            <Dock />
-            <router-view v-slot="{ Component }">
-              <component :is="Component" />
-            </router-view>
+              :width="155"
+              :collapsed="publicStore.collapsed"
+              show-trigger
+              @collapse="publicStore.collapsed = true"
+              @expand="publicStore.collapsed = false"
+            >
+              <n-menu
+                default-value="selectImg"
+                :collapsed="publicStore.collapsed"
+                :collapsed-width="64"
+                :collapsed-icon-size="22"
+                :options="menuOptions"
+                @update-value="changeMenu"
+              />
+            </n-layout-sider>
+            <n-layout>
+              <Dock />
+              <router-view v-slot="{ Component }">
+                <component :is="Component" />
+              </router-view>
+            </n-layout>
           </n-layout>
-        </n-layout>
-      </n-space>
-    </n-message-provider>
+        </n-space>
+      </n-message-provider>
+    </n-dialog-provider>
   </n-config-provider>
 </template>
 

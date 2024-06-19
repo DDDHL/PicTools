@@ -42,15 +42,11 @@ const createColumns = ({
     },
     {
       title: '图片路径',
-      key: 'age',
+      key: 'path',
     },
     {
       title: '原文件大小',
-      key: 'address',
-    },
-    {
-      title: 'Tags',
-      key: 'tags',
+      key: 'size',
       render(row) {
         return h(
           NTag,
@@ -62,7 +58,36 @@ const createColumns = ({
             bordered: false,
           },
           {
-            default: () => row.size,
+            default: () => {
+              if (row.size == null) return '异常'
+              return configStore.sizeUnit === 'KB'
+                ? (row.size / 1024).toFixed(2) + ' KB'
+                : (row.size / (1024 * 1024)).toFixed(2) + ' MB'
+            },
+          }
+        )
+      },
+    },
+    {
+      title: '压缩后大小',
+      key: 'compressSize',
+      render(row) {
+        return h(
+          NTag,
+          {
+            style: {
+              marginRight: '6px',
+            },
+            type: row.compressSize ? 'success' : 'warning',
+            bordered: false,
+          },
+          {
+            default: () => {
+              if (row.compressSize == null) return '待压缩'
+              return configStore.sizeUnit === 'KB'
+                ? (row.compressSize / 1024).toFixed(2) + ' KB'
+                : (row.compressSize / (1024 * 1024)).toFixed(2) + ' MB'
+            },
           }
         )
       },
@@ -132,7 +157,6 @@ $width: 90%;
     margin-top: 2vh;
 
     :deep(.n-data-table-wrapper) {
-      // border-radius: 10px;
       box-shadow: $boxShadow;
     }
   }

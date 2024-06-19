@@ -1,5 +1,6 @@
-import pinia, { useConfigStore } from '@/store'
+import pinia, { useConfigStore, usePublicStore } from '@/store'
 const configStore = useConfigStore(pinia)
+const publicStore = usePublicStore(pinia)
 
 export const useLocalConfig = () => {
   onMounted(() => {
@@ -28,6 +29,9 @@ function recursiveUpdate(store: any, newConfig: any) {
         recursiveUpdate(store[key], newConfig[key])
       } else {
         store[key] = newConfig[key]
+        if (key === 'menuExpand') {
+          publicStore.collapsed = !newConfig[key]
+        }
       }
     }
   }
