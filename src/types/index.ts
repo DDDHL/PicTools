@@ -9,10 +9,12 @@ export type configStoreType = {
   concurrence: number
 }
 export type uploadedImagesType = {
+  id: string
   path: string
   selected: boolean
   scale: number
   name: string
   size: number
+  compressCachePath: string
   compressSize?: number
 }

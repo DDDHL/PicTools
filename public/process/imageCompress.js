@@ -1,7 +1,7 @@
 const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
-const concurrency = 5; // 控制并发数量
+let concurrency = 5; // 控制并发数量
 
 async function compressImage(imageConfig, config) {
   try {
@@ -9,16 +9,19 @@ async function compressImage(imageConfig, config) {
     process.send({
       type: 'compressing',
       data: {
-       ...imageConfig,
+        ...imageConfig,
       }
     })
-
-    // 获取输出文件路径
-    const outputFilePath = path.join(config.outputDir, path.basename(imageConfig.path));
 
     // 使用 sharp 压缩图片
     const image = sharp(imageConfig.path).resize(config.resolution);
     const ext = path.extname(imageConfig.path).toLowerCase();
+
+    // 获取输出文件路径
+    let outputFilePath = path.join(config.outputDir, path.basename(imageConfig.path));
+    if (config.isCache) {
+      outputFilePath = path.join(config.outputDir, imageConfig.id) + ext;
+    }
 
     // 处理不同格式的图片
     if (ext === '.jpeg' || ext === '.jpg') {
@@ -37,8 +40,9 @@ async function compressImage(imageConfig, config) {
     process.send({
       type: 'success',
       data: {
-       ...imageConfig,
-        compressSize: compressedSize
+        ...imageConfig,
+        compressSize: compressedSize,
+        compressCachePath: config.isCache ? outputFilePath : ''
       }
     })
 
@@ -47,7 +51,7 @@ async function compressImage(imageConfig, config) {
     process.send({
       type: 'error',
       data: {
-       ...imageConfig,
+        ...imageConfig,
       }
     })
   }
@@ -74,6 +78,7 @@ async function processImages(config) {
 }
 
 process.on('message', async (config) => {
+  if (config.concurrency) concurrency = config.concurrency
   // 执行图片处理
   processImages(config)
     .then(() => {
@@ -81,5 +86,10 @@ process.on('message', async (config) => {
     })
     .catch((error) => {
       console.error('Error processing images:', error);
-    });
+    }).finally(() => {
+      process.send({
+        type: 'finish',
+        data: {}
+      })
+    })
 })

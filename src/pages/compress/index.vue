@@ -20,12 +20,12 @@ onMounted(async () => {
       message.info('send mail to ' + rowData.name)
     },
   })
-  console.log(configStore.sizeUnit)
   // let data = await window.ipcRenderer.invoke('compress-img', {
   //   imagePaths: JSON.parse(JSON.stringify(publicStore.uploadedImages)),
   //   outputDir: configStore.exportPath,
   //   quality: 60,
   //   resolution: 500,
+  //   configStore.concurrence:configStore.concurrence
   // })
   // console.log(data)
 })

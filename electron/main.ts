@@ -35,7 +35,7 @@ function createWindow() {
     win.loadFile(path.join(RENDERER_DIST, 'index.html'))
   }
 
-  ipcMessage(win, process.env.VITE_PUBLIC)
+  ipcMessage(win)
 }
 
 app.on('window-all-closed', () => {

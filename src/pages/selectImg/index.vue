@@ -11,18 +11,28 @@ const loading = ref(false)
 const selectPic = async () => {
   try {
     loading.value = true
-    const path = await window.ipcRenderer.invoke('get-pic')
-    if (path) {
+    const path = await window.ipcRenderer.invoke(
+      'get-pic',
+      configStore.concurrence
+    )
+    if (path && path.length > 0) {
+      // 去重用的 Set，存储已存在的图片路径
+      const existingPaths = new Set(
+        publicStore.uploadedImages.map((item) => item.path)
+      )
+      const uniqueImages = path.filter(
+        (item: any) => !existingPaths.has(item.path)
+      )
       publicStore.uploadedImages.push(
-        ...path.map((item: any) => {
-          return {
-            path: item.path,
-            selected: false,
-            scale: 1,
-            name: item.name,
-            size: item.size,
-          }
-        })
+        ...uniqueImages.map((item: any) => ({
+          id: item.id,
+          path: item.path,
+          selected: false,
+          scale: 1,
+          name: item.name,
+          size: item.size,
+          compressCachePath: item.compressCachePath,
+        }))
       )
     } else {
       message.error('读取图片出错')
@@ -87,10 +97,14 @@ const deleteImg = (index: number) => {
               >
                 <n-image
                   lazy
+                  object-fit="cover"
                   height="77px"
                   width="105px"
-                  :src="item.path"
+                  :src="
+                    item.compressCachePath ? item.compressCachePath : item.path
+                  "
                   class="imgItem"
+                  :preview-src="item.path"
                 />
                 <n-icon
                   class="closeIcon"
