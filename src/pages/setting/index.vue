@@ -16,16 +16,19 @@ const concurrenceOptions = computed(() => {
 const deleteCache = () => {
   const d = dialog.warning({
     title: '警告',
-    content: '确定删除缓存？删除后无法恢复!',
+    content: '确定删除缓存？删除后将自动重启应用!',
     negativeText: '取消',
     positiveText: '确认删除',
     onPositiveClick: () => {
       d.loading = true
-      return new Promise<void>((resolve) => {
-        setTimeout(() => {
-          resolve()
-          message.success('删除成功')
-        }, 3000)
+      return new Promise<void>(async (resolve) => {
+        try {
+          await window.ipcRenderer.invoke('delete-cache')
+          window.ipcRenderer.send('relaunch')
+        } catch (error) {
+          message.error('删除缓存错误')
+        }
+        resolve()
       })
     },
   })

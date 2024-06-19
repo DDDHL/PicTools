@@ -34,8 +34,6 @@ const selectPic = async () => {
           compressCachePath: item.compressCachePath,
         }))
       )
-    } else {
-      message.error('读取图片出错')
     }
   } catch (error) {
     message.error('读取图片出错')

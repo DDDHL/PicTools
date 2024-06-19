@@ -1,25 +1,33 @@
 import { ipcMain, app, BrowserWindow, dialog } from 'electron'
-import { exec } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import { generateUniqueIds } from './sha256'
+import { deleteFolderRecursive } from './deleteFolder'
 const { fork } = require('child_process')
 
-console.log(path.join(app.getAppPath(), '../../cache'))
-
 export default function ipcMessage(win: BrowserWindow) {
-  ipcMain.on('minimize', (_) => {
+  ipcMain.on('minimize', () => {
     win.minimize()
   })
-  ipcMain.on('maximize', (_) => {
+  ipcMain.on('maximize', () => {
     win.maximize()
   })
-  ipcMain.on('restore', (_) => {
+  ipcMain.on('restore', () => {
     win.restore()
   })
-  ipcMain.on('close', (_) => {
+  ipcMain.on('close', () => {
     app.quit()
-    exec(`taskkill /f /pid ${process.pid}`, () => {})
+  })
+  ipcMain.on('relaunch', () => {
+    app.relaunch()
+    app.exit()
+  })
+  ipcMain.handle('delete-cache', () => {
+    return deleteFolderRecursive(
+      app.isPackaged
+        ? path.join(app.getAppPath(), '../../cache')
+        : path.join(process.env.VITE_PUBLIC, 'cache')
+    )
   })
 
   ipcMain.handle('get-directory-path', () => {
@@ -41,7 +49,7 @@ export default function ipcMessage(win: BrowserWindow) {
     })
   })
 
-  ipcMain.handle('get-pic', (_event, concurrency = 5) => {
+  ipcMain.handle('get-pic', (_, concurrency = 5) => {
     return new Promise(async (resolve) => {
       const result = await dialog.showOpenDialog({
         properties: ['openFile', 'multiSelections'],
@@ -103,7 +111,7 @@ export default function ipcMessage(win: BrowserWindow) {
   ipcMain.handle(
     'compress-img',
     (
-      _event,
+      _,
       arg: {
         imagePaths: {
           id: string
