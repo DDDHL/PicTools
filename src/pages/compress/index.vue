@@ -2,24 +2,19 @@
 import { usePublicStore, useConfigStore } from '@/store'
 import type { uploadedImagesType } from '@/types'
 import { h } from 'vue'
-import { NTag, NButton, useMessage } from 'naive-ui'
+import { NTag, useMessage } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
 const publicStore = usePublicStore()
 const configStore = useConfigStore()
-const data = ref<uploadedImagesType[]>()
 const columns = ref()
 const message = useMessage()
 const pagination = {
-  pageSize: 10,
+  pageSize: 11,
 }
 
 onMounted(async () => {
-  data.value = createData()
-  columns.value = createColumns({
-    sendMail(rowData) {
-      message.info('send mail to ' + rowData.name)
-    },
-  })
+  columns.value = createColumns()
+  console.log(message.success('1'))
   // let data = await window.ipcRenderer.invoke('compress-img', {
   //   imagePaths: JSON.parse(JSON.stringify(publicStore.uploadedImages)),
   //   outputDir: configStore.exportPath,
@@ -30,23 +25,34 @@ onMounted(async () => {
   // console.log(data)
 })
 
-const createColumns = ({
-  sendMail,
-}: {
-  sendMail: (rowData: uploadedImagesType) => void
-}): DataTableColumns<uploadedImagesType> => {
+const createColumns = (): DataTableColumns<uploadedImagesType> => {
   return [
+    {
+      type: 'selection',
+      options: ['all', 'none'],
+    },
     {
       title: '图片名称',
       key: 'name',
+      ellipsis: {
+        tooltip: true,
+      },
     },
     {
       title: '图片路径',
       key: 'path',
+      ellipsis: {
+        tooltip: true,
+      },
     },
     {
       title: '原文件大小',
       key: 'size',
+      width: 120,
+      align: 'center',
+      sorter: (row1, row2) => {
+        return Number(row1.size) - Number(row2.size)
+      },
       render(row) {
         return h(
           NTag,
@@ -71,6 +77,8 @@ const createColumns = ({
     {
       title: '压缩后大小',
       key: 'compressSize',
+      width: 120,
+      align: 'center',
       render(row) {
         return h(
           NTag,
@@ -92,25 +100,7 @@ const createColumns = ({
         )
       },
     },
-    {
-      title: 'Action',
-      key: 'actions',
-      render(row) {
-        return h(
-          NButton,
-          {
-            size: 'small',
-            onClick: () => sendMail(row),
-          },
-          { default: () => 'Send Email' }
-        )
-      },
-    },
   ]
-}
-
-const createData = (): uploadedImagesType[] => {
-  return publicStore.uploadedImages
 }
 </script>
 
@@ -123,8 +113,12 @@ const createData = (): uploadedImagesType[] => {
         :bordered="false"
         :single-line="false"
         :columns="columns"
-        :data="data"
+        :data="publicStore.uploadedImages"
         :pagination="pagination"
+        :rowKey="(row: any) => row.id"
+        :style="{ height: `64.1vh` }"
+        flex-height
+        striped
       />
     </div>
   </div>
@@ -147,17 +141,18 @@ $width: 90%;
   @include bgColor();
   .tools {
     width: $width;
-    height: 150px;
+    height: 25vh;
     @include cardStyle();
     border-radius: 0;
   }
   .table {
     width: $width;
-    height: 100px;
     margin-top: 2vh;
-
     :deep(.n-data-table-wrapper) {
       box-shadow: $boxShadow;
+    }
+    :deep(.n-data-table__pagination) {
+      margin-bottom: 2vh;
     }
   }
 }
