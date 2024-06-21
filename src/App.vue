@@ -110,35 +110,37 @@ const menuOptions = ref<MenuOption[]>([
   >
     <n-dialog-provider>
       <n-message-provider>
-        <n-space vertical>
-          <n-layout has-sider>
-            <n-layout-sider
-              bordered
-              collapse-mode="width"
-              :collapsed-width="64"
-              :width="155"
-              :collapsed="publicStore.collapsed"
-              show-trigger
-              @collapse="publicStore.collapsed = true"
-              @expand="publicStore.collapsed = false"
-            >
-              <n-menu
-                default-value="selectImg"
-                :collapsed="publicStore.collapsed"
+        <n-modal-provider>
+          <n-space vertical>
+            <n-layout has-sider>
+              <n-layout-sider
+                bordered
+                collapse-mode="width"
                 :collapsed-width="64"
-                :collapsed-icon-size="22"
-                :options="menuOptions"
-                @update-value="changeMenu"
-              />
-            </n-layout-sider>
-            <n-layout>
-              <Dock />
-              <router-view v-slot="{ Component }">
-                <component :is="Component" />
-              </router-view>
+                :width="155"
+                :collapsed="publicStore.collapsed"
+                show-trigger
+                @collapse="publicStore.collapsed = true"
+                @expand="publicStore.collapsed = false"
+              >
+                <n-menu
+                  default-value="selectImg"
+                  :collapsed="publicStore.collapsed"
+                  :collapsed-width="64"
+                  :collapsed-icon-size="22"
+                  :options="menuOptions"
+                  @update-value="changeMenu"
+                />
+              </n-layout-sider>
+              <n-layout>
+                <Dock />
+                <router-view v-slot="{ Component }">
+                  <component :is="Component" />
+                </router-view>
+              </n-layout>
             </n-layout>
-          </n-layout>
-        </n-space>
+          </n-space>
+        </n-modal-provider>
       </n-message-provider>
     </n-dialog-provider>
   </n-config-provider>

@@ -69,7 +69,7 @@ const deleteImg = (index: number) => {
               <n-icon size="90" color="#9B9B9C">
                 <ShareCloseTray24Regular />
               </n-icon>
-              <p>点击或者拖动图片到该区域来导入</p>
+              <p>点击该区域导入图片</p>
               <p>仅支持PNG/JPEG/JPG</p>
             </div>
           </n-spin>
