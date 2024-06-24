@@ -1,27 +1,12 @@
-import { ipcMain, app, BrowserWindow, dialog } from 'electron'
+import { ipcMain, app, dialog } from 'electron'
 import fs from 'fs'
 import path from 'path'
 import { generateUniqueIds } from './sha256'
 import { deleteFolderRecursive } from './deleteFolder'
 const { fork } = require('child_process')
 
-export default function ipcMessage(win: BrowserWindow) {
-  ipcMain.on('minimize', () => {
-    win.minimize()
-  })
-  ipcMain.on('maximize', () => {
-    win.maximize()
-  })
-  ipcMain.on('restore', () => {
-    win.restore()
-  })
-  ipcMain.on('close', () => {
-    app.quit()
-  })
-  ipcMain.on('relaunch', () => {
-    app.relaunch()
-    app.exit()
-  })
+export default function ipcFiles() {
+  // 删除根目录缓存
   ipcMain.handle('delete-cache', () => {
     return deleteFolderRecursive(
       app.isPackaged
@@ -30,6 +15,7 @@ export default function ipcMessage(win: BrowserWindow) {
     )
   })
 
+  // 获取文件夹路径
   ipcMain.handle('get-directory-path', () => {
     return new Promise<string>((resolve) => {
       dialog
@@ -49,6 +35,7 @@ export default function ipcMessage(win: BrowserWindow) {
     })
   })
 
+  // 获取图片路径并保存略缩图
   ipcMain.handle('get-pic', (_, concurrency = 5) => {
     return new Promise(async (resolve) => {
       const result = await dialog.showOpenDialog({
@@ -108,6 +95,7 @@ export default function ipcMessage(win: BrowserWindow) {
     })
   })
 
+  // 压缩图片
   ipcMain.handle(
     'compress-img',
     (
@@ -154,14 +142,4 @@ export default function ipcMessage(win: BrowserWindow) {
       childProcess.send(arg)
     }
   )
-
-  win.on('maximize', () => {
-    win.webContents.send('maximize')
-  })
-
-  win.on('resize', () => {
-    if (!win.isMaximized()) {
-      win.webContents.send('restore')
-    }
-  })
 }

@@ -2,8 +2,14 @@
 import { usePublicStore, useConfigStore } from '@/store'
 import type { uploadedImagesType } from '@/types'
 import { h } from 'vue'
-import { NTag, NIcon, useMessage, useModal, NButton, NSlider } from 'naive-ui'
-import { FileArchiveRegular, ClockRegular, CheckDouble } from '@vicons/fa'
+import { NTag, NIcon, useMessage, useModal, NSlider } from 'naive-ui'
+import {
+  FileArchiveRegular,
+  ClockRegular,
+  CheckDouble,
+  AngleDoubleDown,
+} from '@vicons/fa'
+import { Compress } from '@vicons/fa'
 import type { DataTableColumns } from 'naive-ui'
 const publicStore = usePublicStore()
 const configStore = useConfigStore()
@@ -14,6 +20,12 @@ const pagination = {
   pageSize: 11,
 }
 
+const compressConfig = ref({
+  quality: 60,
+  resolution: '',
+  outputName: '',
+})
+
 onMounted(async () => {
   columns.value = createColumns()
   // let data = await window.ipcRenderer.invoke('compress-img', {
@@ -21,7 +33,7 @@ onMounted(async () => {
   //   outputDir: configStore.exportPath,
   //   quality: 60,
   //   resolution: 500,
-  //   configStore.concurrence:configStore.concurrence
+  //   concurrence:configStore.concurrence
   // })
   // console.log(data)
 })
@@ -49,7 +61,7 @@ const rowProps = (row: uploadedImagesType) => {
             h(NSlider, {
               class: 'slider',
               value: diffData.value.resizeNum,
-              tooltip: true,
+              tooltip: false,
               ['onUpdate:value']: (value) => {
                 diffData.value.resizeNum = value
               },
@@ -152,6 +164,39 @@ const createColumns = (): DataTableColumns<uploadedImagesType> => {
         )
       },
     },
+    {
+      title: '压缩率',
+      key: 'compressSize',
+      width: 120,
+      align: 'center',
+      render: (row) => {
+        return h(
+          NTag,
+          {
+            style: {
+              marginRight: '6px',
+            },
+            type: row.compressSize
+              ? row.compressSize === -1
+                ? 'warning'
+                : 'success'
+              : 'info',
+            bordered: false,
+          },
+          {
+            default: () => {
+              if (row.compressSize == null || row.compressSize === -1)
+                return '0'
+              return Math.floor(1 - row.compressSize / row.size) * 100 + '%'
+            },
+            icon: () =>
+              h(NIcon, {
+                component: AngleDoubleDown,
+              }),
+          }
+        )
+      },
+    },
   ]
 }
 </script>
@@ -159,7 +204,51 @@ const createColumns = (): DataTableColumns<uploadedImagesType> => {
 <template>
   <div class="compress">
     <n-h1 class="title"> 图片压缩 </n-h1>
-    <div class="tools"></div>
+    <div class="tools">
+      <div class="top">
+        <n-icon size="25">
+          <Compress />
+        </n-icon>
+        <n-button strong secondary type="info"> 压缩并导出 </n-button>
+      </div>
+      <n-divider />
+      <div class="bottom">
+        <div class="left">
+          <div class="input">
+            <p>像素:</p>
+            <n-input-number
+              v-model:value="compressConfig.resolution"
+              placeholder="自动 | 保持宽高比"
+              clearable
+            />
+          </div>
+          <div class="input">
+            <p>后缀:</p>
+            <n-input
+              v-model:value="compressConfig.outputName"
+              placeholder="自动 | 原名称"
+              clearable
+            />
+          </div>
+        </div>
+        <n-divider vertical />
+        <div class="right">
+          <p>质量:</p>
+          <div class="input">
+            <NSlider
+              :step="1"
+              :format-tooltip="(value: number) => `${value}%`"
+              v-model:value="compressConfig.quality"
+            />
+            <n-input-number
+              v-model:value="compressConfig.quality"
+              placeholder="请输入质量百分比"
+            />
+          </div>
+        </div>
+      </div>
+      <n-divider />
+    </div>
     <div class="table">
       <n-data-table
         :bordered="false"
@@ -168,7 +257,7 @@ const createColumns = (): DataTableColumns<uploadedImagesType> => {
         :data="publicStore.uploadedImages"
         :pagination="pagination"
         :rowKey="(row: any) => row.id"
-        :style="{ height: `64.1vh` }"
+        :style="{ height: `65vh` }"
         flex-height
         striped
         :rowProps="rowProps"
@@ -191,12 +280,79 @@ $width: 90%;
   flex-direction: column;
   align-items: center;
   overflow-y: auto;
+
   @include bgColor();
   .tools {
     width: $width;
-    height: 25vh;
+    height: 19vh;
     @include cardStyle();
     border-radius: 0;
+
+    .top {
+      margin-top: 1vh;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .n-icon {
+        margin-left: 1vh;
+        color: #378af1;
+      }
+      .n-button {
+        margin-right: 1vh;
+      }
+    }
+    .bottom {
+      width: 100%;
+      display: flex;
+      height: 10vh;
+      margin-bottom: 1vh;
+      .n-divider {
+        height: 8vh;
+      }
+      .left,
+      .right {
+        height: 10vh;
+      }
+      .left {
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        .input {
+          p {
+            text-align: right;
+          }
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+          .n-input,
+          .n-input-number {
+            width: 70%;
+          }
+        }
+      }
+      .right {
+        width: calc(100% - 300px);
+        display: flex;
+        align-items: center;
+        margin: 0 1%;
+        p {
+          width: 50px;
+        }
+        .input {
+          width: calc(100% - 50px);
+          display: flex;
+          flex-direction: column;
+          justify-content: space-around;
+          height: 100%;
+        }
+      }
+    }
+  }
+
+  .n-divider {
+    margin: 1vh 0;
+    scale: (0.97);
   }
   .table {
     width: $width;
@@ -213,8 +369,9 @@ $width: 90%;
 <style lang="scss">
 .rowToast {
   $width: 3vh;
+  $height: 70vh;
   width: 100%;
-  height: 50vh;
+  height: $height;
   position: relative;
   overflow: hidden;
   margin-bottom: 2vh;
@@ -243,7 +400,7 @@ $width: 90%;
     &::after {
       content: '';
       position: absolute;
-      top: -50vh;
+      top: calc(-1 * #{$height} / 2);
       right: calc(50% - 1px);
       z-index: 10;
       height: 100vh;
@@ -254,7 +411,7 @@ $width: 90%;
   .compressPic {
     width: 70vw;
     position: absolute;
-    height: 50vh;
+    height: $height;
     background-color: rebeccapurple;
     object-fit: cover;
   }
@@ -267,7 +424,7 @@ $width: 90%;
   }
   .normalPic {
     width: 70vw;
-    height: 50vh;
+    height: $height;
     object-fit: cover;
   }
 }
