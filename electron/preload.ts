@@ -1,24 +1,26 @@
-import { ipcRenderer, contextBridge } from 'electron'
+import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
+import type { SafeIpcRenderer } from '@/types'
 
-// --------- Expose some API to the Renderer process ---------
-contextBridge.exposeInMainWorld('ipcRenderer', {
-  on(...args: Parameters<typeof ipcRenderer.on>) {
-    const [channel, listener] = args
-    return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args))
+const safeIpc: SafeIpcRenderer = {
+  send: (channel, data) => {
+    ipcRenderer.send(channel, data)
   },
-  off(...args: Parameters<typeof ipcRenderer.off>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.off(channel, ...omit)
+  on: (channel: string, listener: (...args: any[]) => void) => {
+    const handler = (_event: IpcRendererEvent, ...args: any[]) =>
+      listener(...args)
+    ipcRenderer.on(channel, handler)
+    // 返回一个函数用于移除监听器
+    return () => ipcRenderer.off(channel, handler)
   },
-  send(...args: Parameters<typeof ipcRenderer.send>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.send(channel, ...omit)
+  off: (channel, listener) => {
+    ipcRenderer.off(channel, listener)
   },
-  invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
-    const [channel, ...omit] = args
-    return ipcRenderer.invoke(channel, ...omit)
+  invoke: (channel, ...args) => {
+    return ipcRenderer.invoke(channel, ...args)
   },
-})
+}
+
+contextBridge.exposeInMainWorld('safeIpc', safeIpc)
 
 // --------- Preload scripts loading ---------
 function domReady(

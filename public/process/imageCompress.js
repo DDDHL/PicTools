@@ -12,7 +12,7 @@ async function compressImage(imageConfig, config) {
         ...imageConfig,
       }
     })
-
+    if(typeof config.resolution !=='number') config.resolution = undefined
     // 使用 sharp 压缩图片
     const image = sharp(imageConfig.path).resize(config.resolution);
     const ext = path.extname(imageConfig.path).toLowerCase();
@@ -20,7 +20,11 @@ async function compressImage(imageConfig, config) {
     // 获取输出文件路径
     let outputFilePath = path.join(config.outputDir, path.basename(imageConfig.path));
     if (config.isCache) {
+      // 略缩图缓存
       outputFilePath = path.join(config.outputDir, imageConfig.id) + ext;
+    }else if(config.outputName){
+      // 常规名称压缩
+      outputFilePath = path.join(outputFilePath.split(ext)[0]+config.outputName,ext)
     }
 
     // 处理不同格式的图片
@@ -42,11 +46,13 @@ async function compressImage(imageConfig, config) {
       data: {
         ...imageConfig,
         compressSize: compressedSize,
-        compressCachePath: config.isCache ? outputFilePath : ''
+        compressExportPath:config.isCache?'':outputFilePath,
+        compressCachePath: config.isCache ? outputFilePath : imageConfig.compressCachePath
       }
     })
 
   } catch (error) {
+    console.log(error)
     // 图片压缩失败
     process.send({
       type: 'error',

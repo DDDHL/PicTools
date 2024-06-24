@@ -7,30 +7,35 @@ import {
 import { Subtract12Filled } from '@vicons/fluent'
 const isMaximized = ref(false)
 
-window.ipcRenderer.on('maximize', () => {
+const maxWatch = window.safeIpc.on('maximize', () => {
   isMaximized.value = true
 })
 
-window.ipcRenderer.on('restore', () => {
+const restoreWatch = window.safeIpc.on('restore', () => {
   isMaximized.value = false
 })
 
 function minimizeWindow() {
-  window.ipcRenderer.send('minimize')
+  window.safeIpc.send('minimize')
 }
 
 function toggleMaximizeWindow() {
   isMaximized.value = !isMaximized.value
   if (isMaximized.value) {
-    window.ipcRenderer.send('maximize')
+    window.safeIpc.send('maximize')
   } else {
-    window.ipcRenderer.send('restore')
+    window.safeIpc.send('restore')
   }
 }
 
 function closeWindow() {
-  window.ipcRenderer.send('close')
+  window.safeIpc.send('close')
 }
+
+onUnmounted(() => {
+  maxWatch()
+  restoreWatch()
+})
 </script>
 
 <template>

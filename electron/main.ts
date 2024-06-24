@@ -36,7 +36,7 @@ function createWindow() {
     win.loadFile(path.join(RENDERER_DIST, 'index.html'))
   }
 
-  ipcFiles()
+  ipcFiles(win)
   ipcSystem(win)
 }
 

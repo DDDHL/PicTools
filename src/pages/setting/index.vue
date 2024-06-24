@@ -23,8 +23,8 @@ const deleteCache = () => {
       d.loading = true
       return new Promise<void>(async (resolve) => {
         try {
-          await window.ipcRenderer.invoke('delete-cache')
-          window.ipcRenderer.send('relaunch')
+          await window.safeIpc.invoke('delete-cache')
+          window.safeIpc.send('relaunch')
         } catch (error) {
           message.error('删除缓存错误')
         }

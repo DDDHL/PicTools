@@ -1,11 +1,11 @@
-import { ipcMain, app, dialog } from 'electron'
+import { ipcMain, app, dialog, BrowserWindow } from 'electron'
 import fs from 'fs'
 import path from 'path'
 import { generateUniqueIds } from './sha256'
 import { deleteFolderRecursive } from './deleteFolder'
 const { fork } = require('child_process')
 
-export default function ipcFiles() {
+export default function ipcFiles(win: BrowserWindow) {
   // 删除根目录缓存
   ipcMain.handle('delete-cache', () => {
     return deleteFolderRecursive(
@@ -109,12 +109,14 @@ export default function ipcFiles() {
           name: string
           size: number
           compressCachePath: string
+          compressExportPath?: string
           compressSize?: number
         }[]
         outputDir: string
         quality: number
         resolution: number
         concurrency: number
+        outputName: string
       }
     ) => {
       // 启动子进程
@@ -125,18 +127,18 @@ export default function ipcFiles() {
         'message',
         (message: {
           type: 'success' | 'error' | 'compressing' | 'finish'
-          data:
-            | {
-                path: string
-                selected: boolean
-                scale: number
-                name: string
-                size: number
-                compressSize: number
-              }
-            | {}
+          data: {
+            id: string
+            path: string
+            selected: boolean
+            scale: number
+            name: string
+            size: number
+            compressSize: number
+          }
         }) => {
-          console.log('接收到子进程消息：', message)
+          win.webContents.send('compress-data', message)
+          if (message.type === 'finish') childProcess.kill()
         }
       )
       childProcess.send(arg)

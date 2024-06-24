@@ -11,10 +11,7 @@ const loading = ref(false)
 const selectPic = async () => {
   try {
     loading.value = true
-    const path = await window.ipcRenderer.invoke(
-      'get-pic',
-      configStore.concurrence
-    )
+    const path = await window.safeIpc.invoke('get-pic', configStore.concurrence)
     if (path && path.length > 0) {
       // 去重用的 Set，存储已存在的图片路径
       const existingPaths = new Set(
@@ -43,7 +40,7 @@ const selectPic = async () => {
 
 const selectDirectory = async () => {
   try {
-    const path = await window.ipcRenderer.invoke('get-directory-path')
+    const path = await window.safeIpc.invoke('get-directory-path')
     if (path) {
       configStore.exportPath = path
       setLocalStore()

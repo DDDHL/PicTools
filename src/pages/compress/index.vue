@@ -19,24 +19,70 @@ const modal = useModal()
 const pagination = {
   pageSize: 11,
 }
-
+const loading = ref(false)
 const compressConfig = ref({
   quality: 60,
   resolution: '',
   outputName: '',
 })
-
-onMounted(async () => {
+let compressStartTime = 0
+onMounted(() => {
   columns.value = createColumns()
-  // let data = await window.ipcRenderer.invoke('compress-img', {
-  //   imagePaths: JSON.parse(JSON.stringify(publicStore.uploadedImages)),
-  //   outputDir: configStore.exportPath,
-  //   quality: 60,
-  //   resolution: 500,
-  //   concurrence:configStore.concurrence
-  // })
-  // console.log(data)
 })
+
+const compressWatch = window.safeIpc.on(
+  'compress-data',
+  (compressData: {
+    type: 'success' | 'error' | 'compressing' | 'finish'
+    data: {
+      id: string
+      path: string
+      selected: boolean
+      scale: number
+      name: string
+      size: number
+      compressSize: number
+      compressCachePath: string
+    } | null
+  }) => {
+    console.log(compressData)
+    let index = publicStore.uploadedImages.findIndex(
+      (item) => item.id === compressData.data!.id
+    )
+    switch (compressData.type) {
+      case 'compressing':
+        if (index !== -1) publicStore.uploadedImages[index].compressSize = -1
+        break
+      case 'finish':
+        loading.value = false
+        message.success(
+          `压缩完成！耗时：${(
+            (new Date().getTime() - compressStartTime) /
+            1000
+          ).toFixed(2)}s`
+        )
+        break
+      case 'success':
+        if (index !== -1) publicStore.uploadedImages[index] = compressData.data!
+        break
+      case 'error':
+        message.error(`压缩异常：${publicStore.uploadedImages[index].name}`)
+        break
+    }
+  }
+)
+
+const compressStart = async () => {
+  message.success('开始压缩 ~')
+  compressStartTime = new Date().getTime()
+  loading.value = true
+  await window.safeIpc.invoke('compress-img', {
+    imagePaths: JSON.parse(JSON.stringify(publicStore.uploadedImages)),
+    outputDir: configStore.exportPath,
+    concurrence: configStore.concurrence,
+    ...compressConfig.value,
+  })
+}
 
 const diffData = ref({
   resizeNum: 50,
@@ -187,7 +233,7 @@ const createColumns = (): DataTableColumns<uploadedImagesType> => {
             default: () => {
               if (row.compressSize == null || row.compressSize === -1)
                 return '0'
-              return Math.floor(1 - row.compressSize / row.size) * 100 + '%'
+              return Math.floor((1 - row.compressSize / row.size) * 100) + '%'
             },
             icon: () =>
               h(NIcon, {
@@ -199,17 +245,29 @@ const createColumns = (): DataTableColumns<uploadedImagesType> => {
     },
   ]
 }
+
+onUnmounted(() => {
+  compressWatch()
+})
 </script>
 
 <template>
   <div class="compress">
-    <n-h1 class="title"> 图片压缩 </n-h1>
+    <h2 class="title">图片压缩</h2>
     <div class="tools">
       <div class="top">
         <n-icon size="25">
           <Compress />
         </n-icon>
-        <n-button strong secondary type="info"> 压缩并导出 </n-button>
+        <n-button
+          strong
+          secondary
+          type="info"
+          :loading="loading"
+          @click="compressStart"
+        >
+          压缩并导出
+        </n-button>
       </div>
       <n-divider />
       <div class="bottom">
@@ -257,7 +315,7 @@ const createColumns = (): DataTableColumns<uploadedImagesType> => {
         :data="publicStore.uploadedImages"
         :pagination="pagination"
         :rowKey="(row: any) => row.id"
-        :style="{ height: `65vh` }"
+        :style="{ height: `67vh` }"
         flex-height
         striped
         :rowProps="rowProps"
@@ -269,9 +327,8 @@ const createColumns = (): DataTableColumns<uploadedImagesType> => {
 <style scoped lang="scss">
 $width: 90%;
 .title {
-  text-align: center;
+  margin: 1vh 0;
   color: #378af1;
-  margin-top: 2vh;
 }
 .compress {
   width: 100%;
