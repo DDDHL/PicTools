@@ -54,6 +54,11 @@ const deleteImg = (index: number) => {
   publicStore.uploadedImages.splice(index, 1)
 }
 </script>
+<script lang="ts">
+export default {
+  name: 'selectImg',
+}
+</script>
 
 <template>
   <div class="selectImg">

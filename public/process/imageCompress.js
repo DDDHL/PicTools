@@ -24,7 +24,7 @@ async function compressImage(imageConfig, config) {
       outputFilePath = path.join(config.outputDir, imageConfig.id) + ext;
     }else if(config.outputName){
       // 常规名称压缩
-      outputFilePath = path.join(outputFilePath.split(ext)[0]+config.outputName,ext)
+      outputFilePath = outputFilePath.split(ext)[0] + config.outputName + ext
     }
 
     // 处理不同格式的图片

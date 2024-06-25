@@ -135,7 +135,9 @@ const menuOptions = ref<MenuOption[]>([
               <n-layout>
                 <Dock />
                 <router-view v-slot="{ Component }">
-                  <component :is="Component" />
+                  <keep-alive :include="['compress', 'selectImg']">
+                    <component :is="Component" />
+                  </keep-alive>
                 </router-view>
               </n-layout>
             </n-layout>

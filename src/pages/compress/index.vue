@@ -22,7 +22,7 @@ const pagination = {
 const loading = ref(false)
 const compressConfig = ref({
   quality: 60,
-  resolution: '',
+  resolution: null,
   outputName: '',
 })
 let compressStartTime = 0
@@ -67,6 +67,7 @@ const compressWatch = window.safeIpc.on(
         break
       case 'error':
         message.error(`压缩异常：${publicStore.uploadedImages[index].name}`)
+        if (index !== -1) delete publicStore.uploadedImages[index].compressSize
         break
     }
   }
@@ -86,15 +87,23 @@ const compressStart = async () => {
 
 const diffData = ref({
   resizeNum: 50,
-  loading: false,
-  compressPic: 'D:\\成品图\\DSC_0058.jpg',
-  normalPic: 'D:\\成品图\\DSC_0060.jpg',
+  compressPic: '',
+  normalPic: '',
 })
 // 点击每一行
 const rowProps = (row: uploadedImagesType) => {
   return {
     style: 'cursor: pointer;',
     onClick: () => {
+      if (!row.compressExportPath) {
+        message.info('请压缩后再查看对比')
+        return
+      }
+      // 获取当前时间戳
+      const timestamp = new Date().getTime()
+      // 给图片路径添加时间戳，强制刷新缓存
+      diffData.value.normalPic = `${row.path}?t=${timestamp}`
+      diffData.value.compressPic = `${row.compressExportPath}?t=${timestamp}`
       diffData.value.resizeNum = 50
       modal.create({
         title: '压缩图片画质对比',
@@ -246,9 +255,12 @@ const createColumns = (): DataTableColumns<uploadedImagesType> => {
   ]
 }
 
-onUnmounted(() => {
-  compressWatch()
-})
+onUnmounted(compressWatch)
+</script>
+<script lang="ts">
+export default {
+  name: 'compress',
+}
 </script>
 
 <template>
@@ -284,7 +296,7 @@ onUnmounted(() => {
             <p>后缀:</p>
             <n-input
               v-model:value="compressConfig.outputName"
-              placeholder="自动 | 原名称"
+              placeholder="自动 | 原名称+后缀"
               clearable
             />
           </div>
@@ -326,10 +338,12 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 $width: 90%;
+
 .title {
   margin: 1vh 0;
   color: #378af1;
 }
+
 .compress {
   width: 100%;
   height: calc(100vh - 35px);
@@ -339,6 +353,7 @@ $width: 90%;
   overflow-y: auto;
 
   @include bgColor();
+
   .tools {
     width: $width;
     height: 19vh;
@@ -350,52 +365,64 @@ $width: 90%;
       display: flex;
       justify-content: space-between;
       align-items: center;
+
       .n-icon {
         margin-left: 1vh;
         color: #378af1;
       }
+
       .n-button {
         margin-right: 1vh;
       }
     }
+
     .bottom {
       width: 100%;
       display: flex;
       height: 10vh;
       margin-bottom: 1vh;
+
       .n-divider {
         height: 8vh;
       }
+
       .left,
       .right {
         height: 10vh;
       }
+
       .left {
         width: 300px;
         display: flex;
         flex-direction: column;
         justify-content: space-around;
+
         .input {
           p {
             text-align: right;
           }
+
           display: flex;
           align-items: center;
           justify-content: space-around;
+
           .n-input,
           .n-input-number {
             width: 70%;
           }
         }
       }
+
       .right {
         width: calc(100% - 300px);
         display: flex;
         align-items: center;
         margin: 0 1%;
+
         p {
           width: 50px;
         }
+
         .input {
           width: calc(100% - 50px);
           display: flex;
@@ -411,12 +438,15 @@ $width: 90%;
     margin: 1vh 0;
     scale: (0.97);
   }
+
   .table {
     width: $width;
     margin-top: 2vh;
+
     :deep(.n-data-table-wrapper) {
       box-shadow: $boxShadow;
     }
+
     :deep(.n-data-table__pagination) {
       margin-bottom: 2vh;
     }
@@ -432,18 +462,22 @@ $width: 90%;
   position: relative;
   overflow: hidden;
   margin-bottom: 2vh;
+
   .slider {
     position: absolute;
     top: 50%;
     z-index: 11;
   }
+
   .n-slider-rail,
   .n-slider-rail__fill {
     background-color: transparent !important;
   }
+
   .n-slider-handle {
     width: $width !important;
     height: $width !important;
+
     &::before {
       position: absolute;
       content: '☺︎';
@@ -454,6 +488,7 @@ $width: 90%;
       align-items: center;
       z-index: 11;
     }
+
     &::after {
       content: '';
       position: absolute;
@@ -465,6 +500,7 @@ $width: 90%;
       background-color: #fff;
     }
   }
+
   .compressPic {
     width: 70vw;
     position: absolute;
@@ -472,6 +508,7 @@ $width: 90%;
     background-color: rebeccapurple;
     object-fit: cover;
   }
+
   .pic {
     height: 100%;
     width: 100%;
@@ -479,6 +516,7 @@ $width: 90%;
     z-index: 9;
     overflow: hidden;
   }
+
   .normalPic {
     width: 70vw;
     height: $height;
