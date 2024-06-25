@@ -5,9 +5,9 @@ const container = ref<HTMLElement | null>(null)
 const { uploadedImages } = storeToRefs(publicStore)
 const handleMouseOver = (i: number) => {
   uploadedImages.value = uploadedImages.value.map((item, index) => {
-    if (index === i) return { ...item, scale: 1.4 }
-    if (index === i - 1 || index === i + 1) return { ...item, scale: 1.25 }
-    if (index === i - 2 || index === i + 2) return { ...item, scale: 1.1 }
+    if (index === i) return { ...item, scale: 1.2 }
+    if (index === i - 1 || index === i + 1) return { ...item, scale: 1.1 }
+    if (index === i - 2 || index === i + 2) return { ...item, scale: 1.0 }
     return { ...item, scale: 1 }
   })
 }
@@ -17,6 +17,17 @@ const resetScale = () => {
     ...item,
     scale: 1,
   }))
+}
+
+const handleWheel = (event: any) => {
+  resetScale()
+  const container = event.currentTarget
+  container.scrollLeft += (event.deltaY > 0 ? 1 : -1) * 65
+}
+
+const selectImg = (item: any) => {
+  publicStore.uploadedImages.forEach((item) => (item.selected = false))
+  item.selected = true
 }
 </script>
 
@@ -34,6 +45,7 @@ const resetScale = () => {
       $route.fullPath !== '/setting'
     "
     @mouseleave="resetScale"
+    @wheel="handleWheel"
   >
     <div
       class="item"
@@ -41,8 +53,12 @@ const resetScale = () => {
       :key="index"
       :style="{ '--scale': item.scale }"
       @mouseover="handleMouseOver(index)"
+      @click="selectImg(item)"
     >
-      <div class="menu"></div>
+      <img
+        :src="item.compressCachePath"
+        :class="['menu', item.selected && 'mask']"
+      />
       <div class="gap" v-if="index !== uploadedImages.length - 1"></div>
     </div>
   </div>
@@ -50,19 +66,24 @@ const resetScale = () => {
 
 <style scoped lang="scss">
 .container {
-  margin: auto;
   padding: 15px;
   position: fixed;
   left: 50%;
+  max-width: 664px;
   transform: translateX(-50%);
   bottom: 20px;
-  height: 80px;
-  background: rgba(0, 0, 0, 0.2);
   border-radius: 20px;
   display: flex;
   align-items: flex-end;
   box-sizing: border-box;
   z-index: 999;
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+.mask {
+  border: 2px solid #ee2a2a;
+  filter: brightness(0.5);
 }
 
 .item {
@@ -71,14 +92,16 @@ const resetScale = () => {
   height: 100%;
   display: flex;
   align-items: flex-end;
-  transition: all 0.35s;
+  transition: all 0.25s;
 
   .menu {
+    box-sizing: border-box;
     width: calc(50px * var(--scale));
     height: calc(50px * var(--scale));
+    object-fit: cover;
     background: #000;
     border-radius: calc(10px * var(--scale));
-    transition: all 0.35s;
+    transition: all 0.25s;
     cursor: pointer;
   }
 
@@ -86,7 +109,7 @@ const resetScale = () => {
     width: calc(15px * var(--scale));
     height: 50px;
     background: transparent;
-    transition: all 0.35s;
+    transition: all 0.25s;
   }
 }
 </style>

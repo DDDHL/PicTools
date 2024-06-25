@@ -26,6 +26,7 @@
     "typescript": "^5.2.2",
     "unplugin-auto-import": "^0.17.6",
     "unplugin-vue-components": "^0.27.0",
+    "v3-drag-zoom": "^1.1.20",
     "vite": "4.5.0",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-electron": "^0.28.6",

@@ -5,9 +5,7 @@ import PicView from '@/components/PicView.vue'
 <template>
   <div class="edit">
     <section class="view">
-      <PicView
-        img-src="D:\\成品图\\picture\\Microsoft_Pride_21_Abrosexual.jpg"
-      />
+      <PicView />
     </section>
     <section class="tools"></section>
   </div>
@@ -19,15 +17,22 @@ import PicView from '@/components/PicView.vue'
   height: calc(100vh - 35px);
   @include bgColor();
   display: flex;
-  align-items: center;
   .view {
-    width: 80%;
-    height: 100%;
+    width: 79%;
+    margin-left: 1%;
+    height: calc(99% - 100px);
+    margin-top: 1%;
+    overflow: hidden;
+    border: 1px dashed;
+    box-sizing: border-box;
   }
   .tools {
     width: 18%;
-    height: 70%;
-    @include cardStyle;
+    height: calc(99% - 100px);
+    margin-top: 1%;
+    margin-left: 1%;
+    background-color: #fff;
+    box-shadow: $boxShadow;
   }
 }
 </style>
