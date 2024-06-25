@@ -28,12 +28,22 @@ async function compressImage(imageConfig, config) {
     }
 
     // 处理不同格式的图片
-    if (ext === '.jpeg' || ext === '.jpg') {
-      await image.jpeg({ quality: config.quality }).toFile(outputFilePath);
-    } else if (ext === '.png') {
-      await image.png({ quality: config.quality }).toFile(outputFilePath);
-    } else {
-      throw new Error(`Unsupported image format: ${ext}`);
+    switch (ext) {
+      case '.jpeg':
+      case '.jpg':
+        await image.jpeg({ quality: config.quality }).toFile(outputFilePath);
+        break;
+      case '.png':
+        await image.png({ quality: config.quality }).toFile(outputFilePath);
+        break;
+      case '.webp':
+        await image.webp({ quality: config.quality }).toFile(outputFilePath);
+        break;
+      case '.gif':
+        await image.gif({ quality: config.quality }).toFile(outputFilePath);
+        break;
+      default:
+        throw new Error(`Unsupported image format: ${ext}`);
     }
 
     // 获取压缩后的文件大小

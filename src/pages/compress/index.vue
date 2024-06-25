@@ -113,6 +113,7 @@ const rowProps = (row: uploadedImagesType) => {
         },
         content: () =>
           h('div', { class: 'rowToast' }, [
+            h('div', { class: 'compressLogo' }, '压缩图'),
             h(NSlider, {
               class: 'slider',
               value: diffData.value.resizeNum,
@@ -128,7 +129,10 @@ const rowProps = (row: uploadedImagesType) => {
             h(
               'div',
               { class: 'pic', style: `width:${diffData.value.resizeNum}%` },
-              [h('img', { class: 'normalPic', src: diffData.value.normalPic })]
+              [
+                h('img', { class: 'normalPic', src: diffData.value.normalPic }),
+                h('div', { class: 'normalLogo' }, '原图'),
+              ]
             ),
           ]),
       })
@@ -521,6 +525,22 @@ $width: 90%;
     width: 70vw;
     height: $height;
     object-fit: cover;
+  }
+  .compressLogo,
+  .normalLogo {
+    background-color: rgba($color: #ededed, $alpha: 0.5);
+    width: 80px;
+    position: absolute;
+    z-index: 9;
+    text-align: center;
+    color: #fff;
+  }
+  .compressLogo {
+    right: 0;
+  }
+  .normalLogo {
+    left: 0;
+    top: 0;
   }
 }
 </style>

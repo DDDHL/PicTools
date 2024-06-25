@@ -17,6 +17,7 @@
     "@vitejs/plugin-vue": "4.6.2",
     "electron": "^30.0.1",
     "electron-builder": "^24.13.3",
+    "fabric": "^5.3.0",
     "naive-ui": "^2.38.2",
     "pinia": "^2.1.7",
     "prettier": "^3.2.5",

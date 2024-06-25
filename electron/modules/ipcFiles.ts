@@ -40,7 +40,12 @@ export default function ipcFiles(win: BrowserWindow) {
     return new Promise(async (resolve) => {
       const result = await dialog.showOpenDialog({
         properties: ['openFile', 'multiSelections'],
-        filters: [{ name: 'Images', extensions: ['jpg', 'png', 'jpeg'] }],
+        filters: [
+          {
+            name: 'Images',
+            extensions: ['jpg', 'webp', 'png', 'jpeg', 'gif'],
+          },
+        ],
       })
       if (!result.canceled) {
         const ids = await generateUniqueIds(result.filePaths)
