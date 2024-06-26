@@ -43,7 +43,7 @@ export default function ipcFiles(win: BrowserWindow) {
         filters: [
           {
             name: 'Images',
-            extensions: ['jpg', 'webp', 'png', 'jpeg', 'gif'],
+            extensions: ['jpg', 'webp', 'png', 'jpeg'],
           },
         ],
       })

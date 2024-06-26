@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import PicView from '@/components/PicView.vue'
+// import EXIF from 'exif-js'
+// import { usePublicStore } from '@/store'
+// const publicStore = usePublicStore()
 </script>
 
 <template>

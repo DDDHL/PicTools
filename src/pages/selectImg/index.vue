@@ -72,7 +72,7 @@ export default {
                 <ShareCloseTray24Regular />
               </n-icon>
               <p>点击该区域导入图片</p>
-              <p>支持PNG/JPEG/JPG/GIF/WEBP</p>
+              <p>支持PNG/JPEG/JPG/WEBP</p>
             </div>
           </n-spin>
           <div class="picList" v-show="publicStore.uploadedImages.length">

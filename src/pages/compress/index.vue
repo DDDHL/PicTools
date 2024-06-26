@@ -45,7 +45,6 @@ const compressWatch = window.safeIpc.on(
       compressCachePath: string
     } | null
   }) => {
-    console.log(compressData)
     let index = publicStore.uploadedImages.findIndex(
       (item) => item.id === compressData.data!.id
     )
@@ -509,7 +508,7 @@ $width: 90%;
     width: 70vw;
     position: absolute;
     height: $height;
-    background-color: rebeccapurple;
+    background-color: #333333;
     object-fit: cover;
   }
 

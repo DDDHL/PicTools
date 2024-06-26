@@ -26,10 +26,4 @@
     allowToChangeInstallationDirectory: true,
     deleteAppDataOnUninstall: true,
   },
-  extraResources: [
-    {
-      from: './public/cache',
-      to: '../cache',
-    },
-  ],
 }

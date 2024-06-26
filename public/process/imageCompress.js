@@ -39,9 +39,6 @@ async function compressImage(imageConfig, config) {
       case '.webp':
         await image.webp({ quality: config.quality }).toFile(outputFilePath);
         break;
-      case '.gif':
-        await image.gif({ quality: config.quality }).toFile(outputFilePath);
-        break;
       default:
         throw new Error(`Unsupported image format: ${ext}`);
     }
