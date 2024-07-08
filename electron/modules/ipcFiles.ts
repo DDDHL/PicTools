@@ -36,7 +36,7 @@ export default function ipcFiles(win: BrowserWindow) {
   })
 
   // 获取图片路径并保存略缩图
-  ipcMain.handle('get-pic', (_, concurrency = 5) => {
+  ipcMain.handle('get-pic', (_, concurrence = 10) => {
     return new Promise(async (resolve) => {
       const result = await dialog.showOpenDialog({
         properties: ['openFile', 'multiSelections'],
@@ -91,7 +91,7 @@ export default function ipcFiles(win: BrowserWindow) {
             : path.join(process.env.VITE_PUBLIC, 'cache'),
           quality: 70,
           resolution: 250,
-          concurrency: concurrency,
+          concurrence,
           isCache: true,
         })
       } else {
@@ -120,7 +120,7 @@ export default function ipcFiles(win: BrowserWindow) {
         outputDir: string
         quality: number
         resolution: number
-        concurrency: number
+        concurrence: number
         outputName: string
       }
     ) => {

@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import ipcFiles from './modules/ipcFiles'
 import ipcSystem from './modules/ipcSystem'
+import exifFunc from './modules/exifFunc'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 process.env.APP_ROOT = path.join(__dirname, '..')
 export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
@@ -38,8 +39,9 @@ function createWindow() {
     win.loadFile(path.join(RENDERER_DIST, 'index.html'))
   }
 
-  ipcFiles(win)
   ipcSystem(win)
+  ipcFiles(win)
+  exifFunc()
 }
 
 app.on('window-all-closed', () => {

@@ -1,7 +1,7 @@
 const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
-let concurrency = 5; // 控制并发数量
+let concurrence = 5; // 控制并发数量
 
 async function compressImage(imageConfig, config) {
   try {
@@ -81,7 +81,7 @@ async function processImages(config) {
     promises.push(promise);
 
     // 控制并发数量
-    if (promises.length >= concurrency) {
+    if (promises.length >= concurrence) {
       await Promise.all(promises);
       promises.length = 0; // 清空数组
     }
@@ -91,7 +91,7 @@ async function processImages(config) {
 }
 
 process.on('message', async (config) => {
-  if (config.concurrency) concurrency = config.concurrency
+  if (config.concurrence) concurrence = config.concurrence
   // 执行图片处理
   processImages(config)
     .then(() => {
