@@ -17,8 +17,20 @@ import {
 } from '@vicons/fluent'
 import router from './router'
 const publicStore = usePublicStore()
-
 useLocalConfig()
+const hashPath = window.location.hash.substring(1)
+const defaultMenu = ref(
+  hashPath.startsWith('/') ? hashPath.substring(1) : hashPath
+)
+onMounted(() => {
+  try {
+    const string = window.localStorage.getItem('uploadedImages')
+    if (string) publicStore.uploadedImages = JSON.parse(string)
+  } catch (error) {
+    console.log(error)
+    window.localStorage.removeItem('uploadedImages')
+  }
+})
 
 function renderIcon(icon: Component) {
   return () => h(NIcon, null, { default: () => h(icon) })
@@ -27,6 +39,7 @@ function renderIcon(icon: Component) {
 watch(
   () => publicStore.uploadedImages,
   (newVal) => {
+    window.localStorage.setItem('uploadedImages', JSON.stringify(newVal))
     if (newVal.length) {
       menuOptions.value.forEach((item) => {
         if (item.key !== 'selectImg' && item.key !== 'setting')
@@ -124,7 +137,7 @@ const menuOptions = ref<MenuOption[]>([
                 @expand="publicStore.collapsed = false"
               >
                 <n-menu
-                  default-value="selectImg"
+                  :default-value="defaultMenu"
                   :collapsed="publicStore.collapsed"
                   :collapsed-width="64"
                   :collapsed-icon-size="22"

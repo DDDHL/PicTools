@@ -22,7 +22,14 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "electron"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "electron",
+    "./auto-imports.d.ts",
+    "./components.d.ts"
+  ],
   "references": [
     {
       "path": "./tsconfig.node.json"

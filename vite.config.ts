@@ -19,6 +19,7 @@ export default defineConfig({
         {
           'naive-ui': [
             'useDialog',
+            'useModal',
             'useMessage',
             'useNotification',
             'useLoadingBar',
@@ -28,6 +29,7 @@ export default defineConfig({
     }),
     Components({
       resolvers: [NaiveUiResolver()],
+      dts: true,
     }),
     electron({
       main: {
@@ -97,7 +99,7 @@ export default defineConfig({
       },
     },
     rollupOptions: {
-      external: ['sharp'],
+      external: ['sharp', 'exiftool-vendored'],
       output: {
         chunkFileNames: 'static/js/[name]-[hash].js',
         entryFileNames: 'static/js/[name]-[hash].js',

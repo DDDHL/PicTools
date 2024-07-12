@@ -3,18 +3,44 @@ export async function parsePhotoMetadata(
 ): Promise<{ [key: string]: string }> {
   try {
     const tags = await window.safeIpc.invoke('get-exif', imgPath)
-    const translatedData: { [key: string]: string } = {}
-    for (const key in tags) {
-      const translatedKey = fieldTranslationMap[key] || key // 如果没有映射则使用原字段名称
-      translatedData[translatedKey] = tags[key]
-    }
-    return translatedData
+    return formatter(tags)
   } catch (error) {
     console.error('读取EXIF数据时出错:', error)
     return {}
   }
 }
 
+// 指定key值替换
+const formatter = (tags: { [key: string]: string }) => {
+  const translatedData: { [key: string]: string } = {}
+  // 替换时间
+  for (const key in tags) {
+    if (key.includes('GPS')) {
+      console.log(key)
+    }
+    if (
+      Object.prototype.toString.call(tags[key]) === '[object Object]' &&
+      (key.toLocaleLowerCase().includes('date') ||
+        key.toLocaleLowerCase().includes('time'))
+    ) {
+      tags[key] = (<any>tags[key]).rawValue ?? '时间解析失败'
+    }
+    // 中文解析，如果没有映射则使用原字段名称
+    const translatedKey = fieldTranslationMap[key] || key
+    translatedData[translatedKey] = tags[key]
+  }
+  return translatedData
+}
+
+const convertDMSToDD = (dms, ref) => {
+  const degrees = dms[0]
+  const minutes = dms[1]
+  const seconds = dms[2]
+  const dd = degrees + minutes / 60 + seconds / 3600
+  return ref === 'S' || ref === 'W' ? -dd : dd
+}
+
+// 中文翻译
 const fieldTranslationMap: { [key: string]: string } = {
   Make: '制造商',
   Model: '型号',
@@ -331,4 +357,138 @@ const fieldTranslationMap: { [key: string]: string } = {
   FileAccessDate: '文件访问日期',
   FileCreateDate: '文件创建日期',
   FileModifyDate: '文件修改日期',
+  Artist: '艺术家',
+  Copyright: '版权',
+  CompressedBitsPerPixel: '压缩比特每像素',
+  MakerNoteVersion: '制造商笔记版本',
+  Quality: '质量',
+  FocusMode: '对焦模式',
+  FlashSetting: '闪光灯设置',
+  FlashType: '闪光灯类型',
+  WB_RBLevels: '白平衡红蓝平衡',
+  ProgramShift: '程序移位',
+  ExposureDifference: '曝光差异',
+  ImageBoundary: '图像边界',
+  ExternalFlashExposureComp: '外部闪光曝光补偿',
+  FlashExposureBracketValue: '闪光曝光包围值',
+  ExposureBracketValue: '曝光包围值',
+  CropHiSpeed: '高速裁剪',
+  ExposureTuning: '曝光调节',
+  VRInfoVersion: '防抖信息版本',
+  VibrationReduction: '防抖',
+  VRMode: '防抖模式',
+  VRType: '防抖类型',
+  'ActiveD-Lighting': '主动D-光照',
+  PictureControlVersion: '照片控制版本',
+  PictureControlName: '照片控制名称',
+  PictureControlBase: '照片控制基础',
+  PictureControlAdjust: '照片控制调整',
+  PictureControlQuickAdjust: '照片控制快速调整',
+  MidRangeSharpness: '中范围锐度',
+  Clarity: '清晰度',
+  Brightness: '亮度',
+  Hue: '色调',
+  FilterEffect: '滤镜效果',
+  ToningEffect: '色调效果',
+  ToningSaturation: '色调饱和度',
+  TimeZone: '时区',
+  DaylightSavings: '夏令时',
+  DateDisplayFormat: '日期显示格式',
+  ISOExpansion: 'ISO扩展',
+  ISO2: 'ISO2',
+  ISOExpansion2: 'ISO扩展2',
+  VignetteControl: '暗角控制',
+  AutoDistortionControl: '自动失真控制',
+  ShutterMode: '快门模式',
+  HDRInfoVersion: 'HDR信息版本',
+  HDR: 'HDR',
+  HDRLevel: 'HDR级别',
+  MechanicalShutterCount: '机械快门次数',
+  ImageSizeRAW: 'RAW图像大小',
+  WhiteBalanceFineTune: '白平衡微调',
+  JPGCompression: 'JPG压缩',
+  ColorTemperatureAuto: '自动色温',
+  BurstGroupID: '连拍组ID',
+  LensType: '镜头类型',
+  FlashMode: '闪光模式',
+  ShootingMode: '拍摄模式',
+  LensFStops: '镜头光圈值',
+  ShotInfoVersion: '拍摄信息版本',
+  FirmwareVersion: '固件版本',
+  FirmwareVersion2: '固件版本2',
+  FirmwareVersion3: '固件版本3',
+  NumberOffsets: '偏移数量',
+  IntervalShooting: '间隔拍摄',
+  ImageArea: '图像区域',
+  RollAngle: '滚动角度',
+  PitchAngle: '俯仰角度',
+  YawAngle: '偏航角度',
+  NoiseReduction: '降噪',
+  ColorBalanceVersion: '色彩平衡版本',
+  LensDataVersion: '镜头数据版本',
+  LensMountType: '镜头卡口类型',
+  MaxAperture: '最大光圈',
+  FocusDistance: '对焦距离',
+  LensPositionAbsolute: '镜头位置绝对值',
+  RetouchHistory: '修饰历史',
+  ImageDataSize: '图像数据大小',
+  ShutterCount: '快门次数',
+  FlashInfoVersion: '闪光信息版本',
+  FlashSource: '闪光来源',
+  ExternalFlashFirmware: '外部闪光固件',
+  ExternalFlashFlags: '外部闪光标志',
+  FlashCommanderMode: '闪光指挥模式',
+  FlashControlMode: '闪光控制模式',
+  FlashGNDistance: '闪光指南距离',
+  FlashColorFilter: '闪光滤色片',
+  FlashGroupAControlMode: '闪光组A控制模式',
+  FlashGroupBControlMode: '闪光组B控制模式',
+  FlashGroupCControlMode: '闪光组C控制模式',
+  FlashIlluminationPattern: '闪光照明模式',
+  FlashGroupACompensation: '闪光组A补偿',
+  FlashGroupBCompensation: '闪光组B补偿',
+  FlashGroupCCompensation: '闪光组C补偿',
+  VariProgram: '变程序',
+  MultiExposureVersion: '多重曝光版本',
+  MultiExposureMode: '多重曝光模式',
+  MultiExposureShots: '多重曝光次数',
+  MultiExposureOverlayMode: '多重曝光叠加模式',
+  HighISONoiseReduction: '高ISO降噪',
+  AFInfo2Version: 'AF信息2版本',
+  ContrastDetectAF: '对比检测自动对焦',
+  AFAreaMode: '自动对焦区域模式',
+  PhaseDetectAF: '相位检测自动对焦',
+  PrimaryAFPoint: '主要自动对焦点',
+  AFPointsUsed: '使用的自动对焦点',
+  FileInfoVersion: '文件信息版本',
+  MemoryCardNumber: '存储卡编号',
+  DirectoryNumber: '目录编号',
+  FileNumber: '文件编号',
+  AFFineTune: '自动对焦微调',
+  AFFineTuneIndex: '自动对焦微调索引',
+  AFFineTuneAdj: '自动对焦微调调整',
+  AFFineTuneAdjTele: '远摄微调调整',
+  RetouchInfoVersion: '修饰信息版本',
+  RetouchNEFProcessing: '修饰NEF处理',
+  SilentPhotography: '静音拍摄',
+  UserComment: '用户评论',
+  Flashpix版本: 'Flashpix版本',
+  CompositeImage: '复合图像',
+  GPSVersionID: 'GPS版本ID',
+  MPFVersion: 'MPF版本',
+  NumberOfImages: '图像数量',
+  MPImageFlags: 'MP图像标志',
+  MPImageFormat: 'MP图像格式',
+  MPImageType: 'MP图像类型',
+  MPImageLength: 'MP图像长度',
+  MPImageStart: 'MP图像起始位置',
+  DependentImage1EntryNumber: '依赖图像1条目编号',
+  DependentImage2EntryNumber: '依赖图像2条目编号',
+  BlueBalance: '蓝色平衡',
+  RedBalance: '红色平衡',
+  AutoFocus: '自动对焦',
+  LensSpec: '镜头规格',
+  DOF: '景深',
+  PowerUpTime: '开机时间',
+  ContrastCurve: '对比曲线',
 }

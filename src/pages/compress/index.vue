@@ -2,7 +2,7 @@
 import { usePublicStore, useConfigStore } from '@/store'
 import type { uploadedImagesType } from '@/types'
 import { h } from 'vue'
-import { NTag, NIcon, useMessage, useModal, NSlider } from 'naive-ui'
+import { NTag, NIcon, NSlider } from 'naive-ui'
 import {
   FileArchiveRegular,
   ClockRegular,

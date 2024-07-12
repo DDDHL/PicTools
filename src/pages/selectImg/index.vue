@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ShareCloseTray24Regular, DismissCircle24Regular } from '@vicons/fluent'
 import { usePublicStore, useConfigStore } from '@/store'
-import { useMessage } from 'naive-ui'
 import { setLocalStore } from '@/hooks/useLocalConfig'
 const message = useMessage()
 const publicStore = usePublicStore()

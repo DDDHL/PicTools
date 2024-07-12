@@ -2,7 +2,6 @@
 import PicView from '@/components/PicView.vue'
 import { parsePhotoMetadata } from '@/utils/getExif'
 import { usePublicStore } from '@/store'
-import { useMessage } from 'naive-ui'
 const message = useMessage()
 const publicStore = usePublicStore()
 const selectedStates = computed(() =>
@@ -43,21 +42,36 @@ const getExifInfo = async (path: string) => {
   }
   loading.value = false
 }
+
+const formatter = (item: string) => {
+  if (item) item = item.replaceAll('"', '')
+  if (item == null || !item || !item.length) {
+    item = '空值'
+  }
+  return item
+}
 </script>
 
 <template>
-  <div class="edit">
-    <section class="view">
-      <PicView />
-    </section>
-    <section class="tools">
-      <div class="item" v-for="(item, key) in data">
-        <p>{{ key }}</p>
-        <!-- <n-input :value="item" type="text" placeholder="基本的 Input" /> -->
-        <p>{{ item }}</p>
-      </div>
-    </section>
-  </div>
+  <n-spin :show="loading">
+    <template #description> 加载Exif信息中 </template>
+    <div class="edit">
+      <section class="view">
+        <PicView />
+      </section>
+      <section class="tools">
+        <div class="item" v-for="(item, key) in data">
+          <p>{{ key }}</p>
+          <n-input
+            readonly
+            :value="formatter(JSON.stringify(item))"
+            type="text"
+            placeholder="基本的 Input"
+          />
+        </div>
+      </section>
+    </div>
+  </n-spin>
 </template>
 
 <style scoped lang="scss">
@@ -91,6 +105,10 @@ const getExifInfo = async (path: string) => {
       }
       .n-input {
         width: 65%;
+      }
+      :deep(input) {
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
       &:first-child {
         margin-top: 3%;

@@ -2,7 +2,6 @@
 import { Info24Regular } from '@vicons/fluent'
 import { useConfigStore } from '@/store'
 import { setLocalStore } from '@/hooks/useLocalConfig'
-import { useMessage, useDialog } from 'naive-ui'
 const configStore = useConfigStore()
 const dialog = useDialog()
 const message = useMessage()

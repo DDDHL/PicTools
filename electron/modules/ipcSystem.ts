@@ -17,11 +17,9 @@ export default function ipcSystem(win: BrowserWindow) {
     app.relaunch()
     app.exit()
   })
-
   win.on('maximize', () => {
     win.webContents.send('maximize')
   })
-
   win.on('resize', () => {
     if (!win.isMaximized()) {
       win.webContents.send('restore')

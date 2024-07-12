@@ -1,6 +1,7 @@
 import { usePublicStore } from './publicStore'
 import { useConfigStore } from './configStore'
+import { createPinia } from 'pinia'
 
-const store = createPinia()
+const pinia = createPinia()
 export { usePublicStore, useConfigStore }
-export default store
+export default pinia
